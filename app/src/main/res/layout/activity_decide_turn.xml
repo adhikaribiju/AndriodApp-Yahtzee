@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Computer's Dice ImageView -->
+
+    <!-- Human's Dice ImageView -->
+
+    <!-- Roll Dice Button -->
+
+    <!-- TextView to show the winner -->
+
+    <!-- Start the Tournament Button (initially hidden) -->
+
+    <Button
+        android:id="@+id/rollDiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Roll Dice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/computerDice" />
+
+    <ImageView
+        android:id="@+id/humanDice"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="236dp"
+        android:contentDescription="Human's Dice"
+        android:src="@drawable/dice1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.697"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/computerDice"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="236dp"
+        android:contentDescription="Computer's Dice"
+        android:src="@drawable/dice1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.295"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/winnerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Roll to determine the winner!"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rollDiceButton" />
+
+    <Button
+        android:id="@+id/startTournamentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start the Tournament"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/winnerTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

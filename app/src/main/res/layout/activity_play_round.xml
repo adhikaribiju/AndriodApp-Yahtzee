@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#AEBFE9"
+    tools:context=".View.PlayRoundActivity">
+
+    <!-- Display Round Number and Player Turn -->
+    <TextView
+        android:id="@+id/roundNumberText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Round No: 1"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/playerTurnText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Player's Turn"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Scorecard Label -->
+    <!-- Scorecard Table Label -->
+    <TextView
+        android:id="@+id/scorecardLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Scorecard"
+        android:textColor="#333333"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/roundNumberText" />
+
+    <!-- Scorecard Table Layout -->
+    <TableLayout
+        android:id="@+id/scorecardTable"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#AEBFE9"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scorecardLabel">
+
+        <!-- Header Row -->
+        <TableRow
+            android:background="#CEC7C7"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Category"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="63dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Score"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Player"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="67dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Round"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text=""
+                android:textColor="#000000"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <!-- Categories Rows -->
+        <TableRow
+            android:layout_height="0dp"
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/category1"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Ones"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score1"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player1"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r1"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton1"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category2"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Twos"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score2"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player2"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r2"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton2"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <!-- Repeat similar rows for each remaining category: Threes, Fours, Fives, etc. -->
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category3"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Threes"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score3"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player3"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r3"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton3"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Fours"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r4"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton4"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Fives"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r5"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton5"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Sixes"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r6"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton6"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Three of a Kind"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r7"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton7"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Four of a Kind"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r8"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton8"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category9"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Full House"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score9"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player9"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r9"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton9"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category10"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Four Straight"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score10"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player10"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r10"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton10"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category11"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Five Straight"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score11"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player11"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r11"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton11"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="0dp">
+
+            <TextView
+                android:id="@+id/category12"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Yahtzee"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/score12"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/player12"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/r12"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="-"
+                android:textColor="#333333" />
+
+            <Button
+                android:id="@+id/scoreButton12"
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:padding="4dp"
+                android:text="Score"
+                android:visibility="invisible"
+                android:textColor="#FFFFFF" />
+        </TableRow>
+
+
+    </TableLayout>
+
+
+    <!-- Bottom Container to hold dice, buttons, and rolls left text -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FAFAFA"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- Dice Container (Horizontal Layout for Dice Images) -->
+        <LinearLayout
+            android:id="@+id/diceContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- Dice Images -->
+            <ImageView
+                android:id="@+id/dice1"
+                android:layout_width="68dp"
+                android:layout_height="58dp"
+                android:layout_margin="4dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/dice1" />
+
+            <ImageView
+                android:id="@+id/dice2"
+                android:layout_width="68dp"
+                android:layout_height="58dp"
+                android:layout_margin="4dp"
+                android:padding="2dp"
+                app:srcCompat="@drawable/dice2" />
+
+            <ImageView
+                android:id="@+id/dice3"
+                android:layout_width="68dp"
+                android:layout_height="58dp"
+                android:layout_margin="4dp"
+                app:srcCompat="@drawable/dice3" />
+
+            <ImageView
+                android:id="@+id/dice4"
+                android:layout_width="68dp"
+                android:layout_height="58dp"
+                android:layout_margin="4dp"
+                app:srcCompat="@drawable/dice4" />
+
+            <ImageView
+                android:id="@+id/dice5"
+                android:layout_width="68dp"
+                android:layout_height="58dp"
+                android:layout_margin="4dp"
+                app:srcCompat="@drawable/dice5" />
+        </LinearLayout>
+
+        <!-- Roll Button and Rolls Left Text -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/Manuallroll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="M" />
+
+            <Button
+                android:id="@+id/rollButton"
+                android:layout_width="144dp"
+                android:layout_height="48dp"
+                android:text="Roll"
+                android:textColorLink="#A63333" />
+
+            <TextView
+                android:id="@+id/rollLeftText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="3 Rolls Left"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Bottom Buttons (Help, Save Game, Log) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/helpButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Help" />
+
+            <Button
+                android:id="@+id/saveGameButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Save Game" />
+
+            <Button
+                android:id="@+id/logButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Log" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
