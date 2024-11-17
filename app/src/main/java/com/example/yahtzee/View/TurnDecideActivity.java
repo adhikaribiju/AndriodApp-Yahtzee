@@ -108,7 +108,7 @@ public class TurnDecideActivity extends AppCompatActivity {
 
         // Start the PlayRoundActivity with the winner's name
         Intent intent = new Intent(TurnDecideActivity.this, PlayRoundActivity.class);
-        intent.putExtra("winner_name", winner);
+        intent.putExtra("winner_name", "Human");
         startActivity(intent);
     }
 }

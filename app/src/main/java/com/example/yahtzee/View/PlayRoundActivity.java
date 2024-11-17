@@ -1,4 +1,7 @@
 package com.example.yahtzee.View;
+import android.os.Handler;
+
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -100,7 +103,6 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
 
 
-
         for (int i = 0; i < diceViews.length; i++) {
             final int index = i; // Capture the index for use in the listener
             diceViews[i].setOnClickListener(v -> {
@@ -125,12 +127,53 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
 
 
+        if (Tournament.currentPlayerId == COMPUTER){
+            computerPlay();
+        }
+        else{
+            handleHumanTurn();
+        }
 
 
+
+        // Set the button click listener
+        manRoll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                rollsCount++;
+                updateRollsLeftText(rollsCount);
+                askDiceEntry(PlayRoundActivity.this, diceValues -> {
+                    // Now `diceValues` contains the validated user input
+                    rollDices(diceValues);  // Pass the values to rollDices
+                    // Keep track of the number of dice rolls here if needed
+                });
+
+                if (rollsCount >3){
+                    rollsCount = 0; //reset
+                    playNextTurn();
+                }
+
+                //rollDices(askDiceEntry(PlayRoundActivity.this));
+                // need to keep track of the number of dice rolls
+                //
+            }
+        });
+
+
+    }
+
+    public void handleHumanTurn(){
         // Set the button click listener
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+                if (Tournament.currentPlayerId == COMPUTER){
+                    computerPlay();
+                    return;
+                }
 
                 // Clear previously selected dice values
                 //selectedDiceInd.clear();
@@ -193,38 +236,24 @@ public class PlayRoundActivity extends AppCompatActivity {
                     selectedDiceInd.clear();
                     isSelected = new boolean[5];
 
+
                     //playNextTurn();
+
                 }
 
             }
 
 
-        });
-
-        // Set the button click listener
-        manRoll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                rollsCount++;
-                updateRollsLeftText(rollsCount);
-                askDiceEntry(PlayRoundActivity.this, diceValues -> {
-                    // Now `diceValues` contains the validated user input
-                    rollDices(diceValues);  // Pass the values to rollDices
-                    // Keep track of the number of dice rolls here if needed
-                });
-
-                if (rollsCount >3){
-                    rollsCount = 0; //reset
-                    playNextTurn();
-                }
-
-                //rollDices(askDiceEntry(PlayRoundActivity.this));
-                // need to keep track of the number of dice rolls
-                //
-            }
         });
     }
+    public void handleComputerTurn(){
+        // disable the roll button
+
+    }
+
+
+    // END
+
     public void askDiceEntry(Context context, DiceEntryCallback callback) {
         ArrayList<Integer> diceValues = new ArrayList<>();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -455,6 +484,8 @@ public class PlayRoundActivity extends AppCompatActivity {
         initDiceBorders();
 
 
+
+
     }
 
     public void updateUIPlayerRoundNo(){
@@ -563,4 +594,404 @@ public class PlayRoundActivity extends AppCompatActivity {
                 break;
         }
     }
+
+
+//    public void computerPlay(){
+//        // Hide Help, Save Game,
+//        // Make the text visisble
+//        // Call the first roll function: The first roll function will return true or false, | True if category scored | False if not
+//        // if first roll function is false, call the second roll function. The second roll function will also return true or false, | True if category scored | False if not
+//        // Nested: If the second roll function returns false, call the first roll function,
+//
+//        // Make the Help and Save Game Button invisible
+//        Button saveGameButton = findViewById(R.id.saveGameButton);
+//        Button helpButton = findViewById(R.id.helpButton);
+//
+//        saveGameButton.setVisibility(View.INVISIBLE);
+//        helpButton.setVisibility(View.INVISIBLE);
+//
+//        // Computer Roll logic
+//        if(!computerFirstRoll()){
+//            if(!computerSecondRoll())
+//            {
+//                computerThirdRoll();
+//            }
+//        }
+//
+//        // Make the buttons visible
+//       saveGameButton.setVisibility(View.VISIBLE);
+//        helpButton.setVisibility(View.VISIBLE);
+//
+//
+//    }
+//
+//    public boolean computerFirstRoll(){
+//
+//        // Create an empty ArrayList to hold kept dice
+//        ArrayList<Integer> keptDiceInd = new ArrayList<>();
+//        ArrayList<Integer> diceVals = new ArrayList<>();
+//
+//
+//        diceVals = generateDice(new ArrayList<Integer>());
+//        combinations.updateDice(diceVals);
+//
+//
+//        for (int i = 0; i < diceViews.length; i++) {
+//            diceViews[i].setImageResource(diceImages[diceVals.get(i) - 1]);
+//        }
+//
+//
+//
+//        // generate the dice combination | Manual or Randomly
+//        // highlight the dice combination on the screen
+//        // Make the score button visible for the available combination
+//
+
+//        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals,  1, keptDiceInd);
+//        if (categoryReceived == -1){
+//            return false;
+//        }
+//        else {
+//
+//            String textId = "score" + (categoryReceived + 1 );
+//            int resID2 = getResources().getIdentifier(textId, "id", getPackageName());
+//            TextView textScore = findViewById(resID2);
+//
+//            String playerText = "player" + (categoryReceived + 1 );
+//            int resID3 = getResources().getIdentifier(playerText, "id", getPackageName());
+//            TextView playerScoredText = findViewById(resID3);
+//
+//            String roundText = "r" + (categoryReceived + 1 );
+//            int resID4 = getResources().getIdentifier(roundText, "id", getPackageName());
+//            TextView roundNoText = findViewById(resID4);
+//
+//
+//            int score = combinations.getScore(categoryReceived);
+//            textScore.setText(String.valueOf(score));
+//
+//            playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
+//
+//            roundNoText.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+//
+//            playNextTurn();
+//        }
+//     return true;
+//    }
+//
+public void computerPlay() {
+    // Make Help and Save Game Buttons Invisible
+
+    ArrayList<Integer> keptDiceInd = new ArrayList<>();
+
+    Button saveGameButton = findViewById(R.id.saveGameButton);
+    Button helpButton = findViewById(R.id.helpButton);
+
+    saveGameButton.setVisibility(View.INVISIBLE);
+    helpButton.setVisibility(View.INVISIBLE);
+
+    // Roll the dice
+    ArrayList<Integer> diceVals = generateDice(new ArrayList<>());
+    combinations.updateDice(diceVals);
+    availableCombinations = combinations.availableToScoreCategories();
+
+    // Display dice in the UI
+    for (int i = 0; i < diceViews.length; i++) {
+        diceViews[i].setImageResource(diceImages[diceVals.get(i) - 1]);
+    }
+
+    // Make only the specified buttons in availableCategories visible
+    for (Integer categoryNumber : availableCombinations) {
+        String buttonId = "scoreButton" + (categoryNumber+1);
+        int resID = getResources().getIdentifier(buttonId, "id", getPackageName());
+
+        Button scoreButton = findViewById(resID);
+        if (scoreButton != null) {
+            scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
+
+        }
+    }
+   // decidedToKeepMsg(diceVals, keptDiceInd,1);
+    // Use a Handler to delay the scoring logic
+    Handler handler = new Handler();
+    handler.postDelayed(() -> {
+        // Call scoring logic after displaying dice
+        if (!computerFirstRoll(diceVals, keptDiceInd)) {
+
+
+            // Prepare the message string to show kept dice values
+            StringBuilder messageBuilder = new StringBuilder("Computer decided to keep these dices: \n");
+            for (int index : keptDiceInd) {
+                messageBuilder.append(diceVals.get(index)).append(" ");
+            }
+
+          messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());
+
+            new AlertDialog.Builder(this) // Replace with your activity's context
+                    .setTitle("Computer's Decision")
+                    .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss(); // Dismiss the dialog
+                        computerSecondRoll(keptDiceInd);
+
+                        //playNextTurn();   // Call the next turn logic
+                    })
+                    .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                    .show();
+        }
+
+        // Make the buttons visible again after scoring
+        saveGameButton.setVisibility(View.VISIBLE);
+        helpButton.setVisibility(View.VISIBLE);
+    }, 2000); // 1-second delay
+
+    //saveGameButton.setVisibility(View.VISIBLE);
+      //  helpButton.setVisibility(View.VISIBLE);
 }
+
+    public boolean computerFirstRoll(ArrayList<Integer> diceVals, ArrayList<Integer> keptDiceInd ) {
+        // Keep dice indices (if any logic applies)
+        //ArrayList<Integer> keptDiceInd = new ArrayList<>();
+
+
+        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals, 0, keptDiceInd);
+        if (categoryReceived == -1) {
+            return false;
+        } else {
+            // Show a dialog before updating the scorecard
+
+            String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
+
+
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Computer's Decision")
+                    .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        // Update the scorecard UI after the user presses OK
+                        updateScorecardUI(categoryReceived);
+                    })
+                    .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                    .show();
+        }
+        return true;
+    }
+
+    private void updateScorecardUI(int categoryReceived) {
+        // Update the scorecard UI
+        String textId = "score" + (categoryReceived + 1);
+        int resID2 = getResources().getIdentifier(textId, "id", getPackageName());
+        TextView textScore = findViewById(resID2);
+
+        String playerText = "player" + (categoryReceived + 1);
+        int resID3 = getResources().getIdentifier(playerText, "id", getPackageName());
+        TextView playerScoredText = findViewById(resID3);
+
+        String roundText = "r" + (categoryReceived + 1);
+        int resID4 = getResources().getIdentifier(roundText, "id", getPackageName());
+        TextView roundNoText = findViewById(resID4);
+
+        int score = combinations.getScore(categoryReceived);
+        textScore.setText(String.valueOf(score));
+
+        playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
+
+        roundNoText.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+
+        // Call the next turn logic
+        playNextTurn();
+    }
+
+    public void computerSecondRoll(ArrayList<Integer> keptDiceInd){
+
+        initBoard();
+        updateRollsLeftText(1);
+
+        ArrayList<Integer> previousKeptDiceInd = new ArrayList<>(keptDiceInd);
+        keptDiceInd.clear();
+
+
+        Button saveGameButton = findViewById(R.id.saveGameButton);
+        Button helpButton = findViewById(R.id.helpButton);
+
+        // Roll the dice
+        ArrayList<Integer> diceVals = generateDice(previousKeptDiceInd);
+        combinations.updateDice(diceVals);
+        availableCombinations = combinations.availableToScoreCategories();
+
+        // Display dice in the UI
+        for (int i = 0; i < diceViews.length; i++) {
+            diceViews[i].setImageResource(diceImages[diceVals.get(i) - 1]);
+        }
+
+        // Make only the specified buttons in availableCategories visible
+        for (Integer categoryNumber : availableCombinations) {
+            String buttonId = "scoreButton" + (categoryNumber+1);
+            int resID = getResources().getIdentifier(buttonId, "id", getPackageName());
+
+            Button scoreButton = findViewById(resID);
+            if (scoreButton != null) {
+                scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
+
+            }
+        }
+
+
+        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals, 1, keptDiceInd);
+
+        // check for kept error
+
+
+
+        // Use a Handler to delay the scoring logic
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            // Call scoring logic after displaying dice
+            if (categoryReceived == -1) {
+
+
+                // Prepare the message string to show kept dice values
+                StringBuilder messageBuilder = new StringBuilder("Computer decided to keep these dices: \n");
+                for (int index : keptDiceInd) {
+                    messageBuilder.append(diceVals.get(index)).append(" ");
+                }
+
+                messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());
+
+                new AlertDialog.Builder(this) // Replace with your activity's context
+                        .setTitle("Computer's Decision")
+                        .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            dialog.dismiss(); // Dismiss the dialog
+                            computerThirdRoll(keptDiceInd);
+
+                            //playNextTurn();   // Call the next turn logic
+                        })
+                        .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                        .show();
+            }
+            else{
+                // Show a dialog before updating the scorecard
+
+                String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
+
+                new AlertDialog.Builder(this)
+                        .setTitle("Computer's Decision")
+                        .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            // Update the scorecard UI after the user presses OK
+                            updateScorecardUI(categoryReceived);
+                        })
+                        .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                        .show();
+
+            }
+
+            // Make the buttons visible again after scoring
+            saveGameButton.setVisibility(View.VISIBLE);
+            helpButton.setVisibility(View.VISIBLE);
+        }, 2000); // 1-second delay
+
+
+
+    }
+
+
+    public void computerThirdRoll(ArrayList<Integer> keptDiceInd){
+
+        initBoard();
+        updateRollsLeftText(1);
+
+        Button saveGameButton = findViewById(R.id.saveGameButton);
+        Button helpButton = findViewById(R.id.helpButton);
+        // Roll the dice
+        ArrayList<Integer> diceVals = generateDice(keptDiceInd);
+        combinations.updateDice(diceVals);
+        availableCombinations = combinations.availableToScoreCategories();
+
+        // Display dice in the UI
+        for (int i = 0; i < diceViews.length; i++) {
+            diceViews[i].setImageResource(diceImages[diceVals.get(i) - 1]);
+        }
+
+        // Make only the specified buttons in availableCategories visible
+        for (Integer categoryNumber : availableCombinations) {
+            String buttonId = "scoreButton" + (categoryNumber+1);
+            int resID = getResources().getIdentifier(buttonId, "id", getPackageName());
+
+            Button scoreButton = findViewById(resID);
+            if (scoreButton != null) {
+                scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
+
+            }
+        }
+
+
+        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals, 2, keptDiceInd);
+        if (categoryReceived == -1) {
+            new AlertDialog.Builder(this) // Replace with your activity's context
+                    .setTitle("Computer's Decision")
+                    .setMessage("Nothing to Score, skipping turn")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss(); // Dismiss the dialog
+                        playNextTurn();   // Call the next turn logic
+                    })
+                    .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                    .show();
+        } else {
+            // Show a dialog before updating the scorecard
+
+            String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Computer's Decision")
+                    .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        // Update the scorecard UI after the user presses OK
+                        updateScorecardUI(categoryReceived);
+                    })
+                    .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                    .show();
+        }
+
+    }
+
+    public void decidedToKeepMsg(ArrayList<Integer> diceVals, ArrayList<Integer> keptDiceInd, int numOfRolls){
+        // Use a Handler to delay the scoring logic
+        Handler handler = new Handler();
+        handler.postDelayed(() -> {
+            // Call scoring logic after displaying dice
+            if (!computerFirstRoll(diceVals, keptDiceInd)) {
+
+
+                // Prepare the message string to show kept dice values
+                StringBuilder messageBuilder = new StringBuilder("Computer decided to keep these dices: ");
+                for (int index : keptDiceInd) {
+                    messageBuilder.append(diceVals.get(index)).append(" ");
+                }
+
+                new AlertDialog.Builder(this) // Replace with your activity's context
+                        .setTitle("Computer's Decision")
+                        .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            dialog.dismiss(); // Dismiss the dialog
+                            if(numOfRolls==2){
+                                computerThirdRoll(keptDiceInd);
+                            }
+                            else {
+                                computerSecondRoll(keptDiceInd);
+                            }
+
+
+                            //playNextTurn();   // Call the next turn logic
+                        })
+                        .setCancelable(false) // Prevent dismissing the dialog without clicking OK
+                        .show();
+            }
+
+        }, 2000); // 1-second delay
+}
+
+}
+
+
+

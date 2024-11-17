@@ -74,6 +74,23 @@ public class Round {
 
 
 
+    public int playTurnComputer(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd){
+
+        // based on the dice combination, find out the available combinations
+        // if there are available combinations, find out the highest one, score it and return the category number
+        // if not, return -1
+
+        return computer.playTurnt(player_id, dice,rollCount,keptDiceInd);
+
+        //human.playTurn(player_id, dice,11);
+
+
+    }
+
+    public String getReasoning(){
+        return computer.getReasoningMsg();
+    }
+
 
 
 

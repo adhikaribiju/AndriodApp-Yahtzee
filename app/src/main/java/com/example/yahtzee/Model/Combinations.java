@@ -258,7 +258,7 @@ public class Combinations extends Scorecard {
 
     public Integer getScore(int category) {
         int score = 0;
-
+        countDiceFace();
         switch (category) {
             case 0:
             case 1:
@@ -291,6 +291,39 @@ public class Combinations extends Scorecard {
         }
         return score;
     }
+
+    public String getCategoryName(int categoryNum) {
+        switch (categoryNum) {
+            case 0:
+                return "Ones";
+            case 1:
+                return "Twos";
+            case 2:
+                return "Threes";
+            case 3:
+                return "Fours";
+            case 4:
+                return "Fives";
+            case 5:
+                return "Sixes";
+            case 6:
+                return "Three of a Kind";
+            case 7:
+                return "Four of a Kind";
+            case 8:
+                return "Full House";
+            case 9:
+                return "Four Straight";
+            case 10:
+                return "Five Straight";
+            case 11:
+                return "Yahtzee";
+            default:
+                return "Unknown Category"; // Handle invalid category numbers
+        }
+    }
+
+
 
 
 }
