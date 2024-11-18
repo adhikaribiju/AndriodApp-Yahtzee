@@ -134,4 +134,24 @@ public class Scorecard {
             System.out.printf("%-17d %-25s %-10d %-10s %-10d\n", i + 1, card.name, card.score, player, card.round_no);
         }
     }
+
+    public int getSetCategoryScore(int categoryNum){
+        Card card = scoreCard.get(categoryNum);
+        return card.score;
+    }
+
+    public int getSetPlayerId(int categoryNum){
+        Card card = scoreCard.get(categoryNum);
+        return card.player_id;
+    }
+
+    public int getSetRoundNo(int categoryNum){
+        Card card = scoreCard.get(categoryNum);
+        return card.round_no;
+    }
+
+
+
+
+
 }

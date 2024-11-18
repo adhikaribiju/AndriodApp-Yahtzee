@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#AEBFE9"
+    android:background="#333652"
     tools:context=".View.PlayRoundActivity">
 
     <!-- Display Round Number and Player Turn -->
@@ -14,53 +14,51 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Round No: 1"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Scorecard Label -->
+    <!-- Scorecard Table Label -->
+
+    <!-- Scorecard Table Layout -->
 
     <TextView
         android:id="@+id/playerTurnText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="136dp"
         android:text="Player's Turn"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.163"
+        app:layout_constraintStart_toEndOf="@+id/roundNumberText"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Scorecard Label -->
-    <!-- Scorecard Table Label -->
-    <TextView
-        android:id="@+id/scorecardLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Scorecard"
-        android:textColor="#333333"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/roundNumberText" />
 
-    <!-- Scorecard Table Layout -->
+    <!-- Bottom Container to hold dice, buttons, and rolls left text -->
+
     <TableLayout
         android:id="@+id/scorecardTable"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#AEBFE9"
+        android:layout_marginTop="48dp"
+        android:background="#FAD02C"
         android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scorecardLabel">
+        app:layout_constraintTop_toBottomOf="@+id/playerTurnText">
 
         <!-- Header Row -->
         <TableRow
-            android:background="#CEC7C7"
+            android:background="#EBEAEF"
             android:padding="8dp">
 
             <TextView
@@ -191,8 +189,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <!-- Repeat similar rows for each remaining category: Threes, Fours, Fives, etc. -->
@@ -237,8 +235,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -282,8 +280,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -327,8 +325,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -372,8 +370,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -417,8 +415,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -462,8 +460,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -507,8 +505,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -552,8 +550,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -597,8 +595,8 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
         <TableRow
@@ -642,19 +640,17 @@
                 android:backgroundTint="#4CAF50"
                 android:padding="4dp"
                 android:text="Score"
-                android:visibility="invisible"
-                android:textColor="#FFFFFF" />
+                android:textColor="#FFFFFF"
+                android:visibility="invisible" />
         </TableRow>
 
 
     </TableLayout>
 
-
-    <!-- Bottom Container to hold dice, buttons, and rolls left text -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FAFAFA"
+        android:background="#E9EAEC"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -691,6 +687,7 @@
                 android:layout_width="68dp"
                 android:layout_height="58dp"
                 android:layout_margin="4dp"
+                android:padding="2dp"
                 app:srcCompat="@drawable/dice3" />
 
             <ImageView
@@ -698,6 +695,7 @@
                 android:layout_width="68dp"
                 android:layout_height="58dp"
                 android:layout_margin="4dp"
+                android:padding="2dp"
                 app:srcCompat="@drawable/dice4" />
 
             <ImageView
@@ -705,6 +703,7 @@
                 android:layout_width="68dp"
                 android:layout_height="58dp"
                 android:layout_margin="4dp"
+                android:padding="2dp"
                 app:srcCompat="@drawable/dice5" />
         </LinearLayout>
 
@@ -716,12 +715,19 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/Manuallroll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="M" />
+                android:text="M"
+                android:layout_margin="8dp"
+                app:cornerRadius="12dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="@color/red"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/gray"
+            android:textColor="@color/red"
+            android:elevation="4dp" />
 
             <Button
                 android:id="@+id/rollButton"
@@ -741,38 +747,92 @@
 
         <!-- Bottom Buttons (Help, Save Game, Log) -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="2dp">
 
-            <TextView
-                android:id="@+id/compMsg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <Button
+            <ImageButton
                 android:id="@+id/helpButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Help" />
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="Help"
+                android:scaleType="fitCenter"
+                android:src="@drawable/hint" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/saveGameButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Save Game" />
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="Save"
+                android:scaleType="fitCenter"
+                android:src="@drawable/save" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/logButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Log" />
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:adjustViewBounds="true"
+                android:background="@null"
+                android:contentDescription="Log"
+                android:scaleType="fitCenter"
+                android:src="@drawable/log" />
         </LinearLayout>
+
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="65dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/roundNumberText"
+        app:srcCompat="@drawable/human" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="53dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/robot" />
+
+    <TextView
+        android:id="@+id/humanScoreTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="0"
+        android:textColor="#FFFFFF"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/roundNumberText" />
+
+    <TextView
+        android:id="@+id/computerScoreTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:text="0"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.235"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

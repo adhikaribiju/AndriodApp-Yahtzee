@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.yahtzee.R;
@@ -20,7 +24,10 @@ public class TurnDecideActivity extends AppCompatActivity {
     private TextView winnerTextView;
     private Button rollDiceButton;
     private Button startTournamentButton;
+    private Button manSetButton;
     private Random random;
+
+    private TextView drawText;
 
     // Array of drawable resource IDs for the dice images
     private final int[] diceImages = {
@@ -43,6 +50,10 @@ public class TurnDecideActivity extends AppCompatActivity {
         winnerTextView = findViewById(R.id.winnerTextView);
         rollDiceButton = findViewById(R.id.rollDiceButton);
         startTournamentButton = findViewById(R.id.startTournamentButton);
+        manSetButton = findViewById(R.id.manSetButton);
+        drawText = findViewById(R.id.drawText);
+
+        drawText.setVisibility(View.INVISIBLE);
 
         // Initialize the Random object
         random = new Random();
@@ -60,6 +71,16 @@ public class TurnDecideActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startPlayRoundActivity();
+            }
+        });
+
+
+
+        // Set the Start Tournament button click listener
+        manSetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                manualRoll();
             }
         });
     }
@@ -84,11 +105,116 @@ public class TurnDecideActivity extends AppCompatActivity {
             displayWinner("Computer");
         } else {
             // It's a draw, ask to reroll
-            Toast.makeText(this, "It's a draw! Please roll again.", Toast.LENGTH_SHORT).show();
+            drawText.setVisibility(View.VISIBLE);
+            //Toast.makeText(this, "It's a draw! Please roll again.", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private void manualRoll() {
+        // Create a dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select the Dice Values");
+
+        // Create a LinearLayout to hold all UI elements
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(16, 16, 16, 16);
+
+        // Arrays to store selected values
+        final int[] humanScore = {0};
+        final int[] computerScore = {0};
+
+        // Create UI for Human
+        TextView humanLabel = new TextView(this);
+        humanLabel.setText("Human:");
+        layout.addView(humanLabel);
+
+        RadioGroup humanGroup = new RadioGroup(this);
+        humanGroup.setOrientation(RadioGroup.HORIZONTAL);
+        for (int i = 1; i <= 6; i++) {
+            RadioButton radioButton = new RadioButton(this);
+            radioButton.setText(String.valueOf(i));
+            radioButton.setTag(i); // Use tag to store the value
+            humanGroup.addView(radioButton);
+        }
+        layout.addView(humanGroup);
+
+        // Create UI for Computer
+        TextView computerLabel = new TextView(this);
+        computerLabel.setText("Computer:");
+        layout.addView(computerLabel);
+
+        RadioGroup computerGroup = new RadioGroup(this);
+        computerGroup.setOrientation(RadioGroup.HORIZONTAL);
+        for (int i = 1; i <= 6; i++) {
+            RadioButton radioButton = new RadioButton(this);
+            radioButton.setText(String.valueOf(i));
+            radioButton.setTag(i); // Use tag to store the value
+            computerGroup.addView(radioButton);
+        }
+        layout.addView(computerGroup);
+
+        // Add the layout to the dialog
+        builder.setView(layout);
+
+        // Set dialog buttons
+        builder.setPositiveButton("Set", (dialog, which) -> {
+            // Get selected value for Human
+            int selectedHumanId = humanGroup.getCheckedRadioButtonId();
+            if (selectedHumanId != -1) {
+                RadioButton selectedHumanButton = humanGroup.findViewById(selectedHumanId);
+                humanScore[0] = (int) selectedHumanButton.getTag();
+            }
+
+            // Get selected value for Computer
+            int selectedComputerId = computerGroup.getCheckedRadioButtonId();
+            if (selectedComputerId != -1) {
+                RadioButton selectedComputerButton = computerGroup.findViewById(selectedComputerId);
+                computerScore[0] = (int) selectedComputerButton.getTag();
+            }
+
+            // Use the selected values
+            //Log.d("ManualRoll", "Human Score: " + humanScore[0]);
+            //Log.d("ManualRoll", "Computer Score: " + computerScore[0]);
+
+            // Optionally display a toast with the selected values
+            //Toast.makeText(this, "Human: " + humanScore[0] + ", Computer: " + computerScore[0], Toast.LENGTH_SHORT).show();
+            // Update computer's dice ImageView based on the roll
+            computerDice.setImageResource(diceImages[computerScore[0] - 1]);
+
+            // Update human's dice ImageView based on the roll
+            humanDice.setImageResource(diceImages[humanScore[0]  - 1]);
+
+            // Determine the winner or if it's a draw
+            if (humanScore[0] > computerScore[0]) {
+                // Human wins
+                displayWinner("Human");
+            } else if (computerScore[0] > humanScore[0]) {
+                // Computer wins
+                displayWinner("Computer");
+            } else {
+                // It's a draw, ask to reroll
+                //Toast.makeText(this, "It's a draw! Please roll again.", Toast.LENGTH_SHORT).show();
+                drawText.setVisibility(View.VISIBLE);
+            }
+
+
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        // Show the dialog
+        builder.show();
+
+
+    }
+
+
     private void displayWinner(String winner) {
+
+        drawText.setVisibility(View.INVISIBLE);
+        manSetButton.setVisibility(View.GONE);
+
         // Show the winner in the TextView
         winnerTextView.setText(winner + " won the toss!");
 
@@ -108,7 +234,7 @@ public class TurnDecideActivity extends AppCompatActivity {
 
         // Start the PlayRoundActivity with the winner's name
         Intent intent = new Intent(TurnDecideActivity.this, PlayRoundActivity.class);
-        intent.putExtra("winner_name", "Human");
+        intent.putExtra("winner_name", winner);
         startActivity(intent);
     }
 }

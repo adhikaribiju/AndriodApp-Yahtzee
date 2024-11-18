@@ -66,7 +66,7 @@ public class Combinations extends Scorecard {
                 hasTwo = true;
             }
         }
-        return hasYahtzee() || (hasThree && hasTwo); // Yahtzee counts as a full house
+        return (hasThree && hasTwo); // Yahtzee counts as a full house
     }
 
     // Method to check for a four straight (small straight)

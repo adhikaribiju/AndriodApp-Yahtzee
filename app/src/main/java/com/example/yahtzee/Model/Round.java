@@ -121,31 +121,7 @@ public class Round {
     }
 
     // Resumes a round consisting of two turns
-    public void resumeRound(int player_id) {
-        Human human = new Human();
-        Computer computer = new Computer();
-        Combinations c = new Combinations();
 
-        System.out.println("\nRound " + numOfRounds);
-
-        if (player_id == 1) {
-            human.playTurn();
-            if (!c.isScorecardFull()) computer.playTurn();
-        } else {
-            computer.playTurn();
-            if (!c.isScorecardFull()) human.playTurn();
-        }
-
-        if (isSaveGame()) {
-            Serialization serialize = new Serialization();
-            if (serialize.saveGame()) {
-                System.out.println("Game saved!");
-                System.exit(0); // Exit the program
-            }
-        }
-
-        numOfRounds++;
-    }
 
     // Finds the index of the dice to keep
     public int diceIndex(int dice_to_keep) {
