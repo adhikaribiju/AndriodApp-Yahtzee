@@ -43,7 +43,6 @@
 
 
     <!-- Bottom Container to hold dice, buttons, and rolls left text -->
-
     <TableLayout
         android:id="@+id/scorecardTable"
         android:layout_width="0dp"
@@ -646,6 +645,7 @@
 
 
     </TableLayout>
+
 
     <LinearLayout
         android:layout_width="0dp"

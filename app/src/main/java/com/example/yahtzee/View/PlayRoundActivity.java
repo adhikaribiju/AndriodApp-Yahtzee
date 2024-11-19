@@ -92,6 +92,7 @@ public class PlayRoundActivity extends AppCompatActivity {
 
     ArrayList<Integer> KeptDiceInd = new ArrayList<>();
 
+
     public interface DiceEntryCallback {
         void onDiceEntered(ArrayList<Integer> diceValues);
     }
@@ -106,6 +107,10 @@ public class PlayRoundActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_round);
+
+        ImageView helpButton = findViewById(R.id.helpButton);
+
+
 
         combinations = new Combinations();
 
@@ -183,12 +188,11 @@ public class PlayRoundActivity extends AppCompatActivity {
             assert winnerName != null;
             if (winnerName.equals("Human")) {
                 MainActivity.tournament.startTournament(1);
+                helpButton.setVisibility(View.INVISIBLE);
             } else {
                 MainActivity.tournament.startTournament(2);
+                helpButton.setVisibility(View.INVISIBLE);
             }
-
-
-
 
         }
 
@@ -296,12 +300,20 @@ public class PlayRoundActivity extends AppCompatActivity {
         });
 
 
-        ImageView helpButton = findViewById(R.id.helpButton);
+        //ImageView helpButton = findViewById(R.id.helpButton);
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Call playTurnt to get the categoryReceived value
-                int categoryReceived = MainActivity.tournament.round.human.playTurnt(HUMAN, Currentdice, rollsCount, KeptDiceInd);
+
+                ArrayList<Integer> selectedDiceInds = new ArrayList<Integer>();
+                for (int i = 0; i < diceViews.length; i++) {
+                    if (isSelected[i]) {
+                        selectedDiceInds.add(i); // Add the dice index (0-5)
+                    }
+                }
+
+                int categoryReceived = MainActivity.tournament.round.human.playTurnt(HUMAN, Currentdice, rollsCount, selectedDiceInds);
 
                 // Create the dialog box
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlayRoundActivity.this);
@@ -314,7 +326,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                 if (categoryReceived == -1) {
                     // Generate dice values from KeptDiceInd
                     StringBuilder values = new StringBuilder();
-                    for (int index : KeptDiceInd) {
+                    for (int index : selectedDiceInds) {
                         if (index >= 0 && index < Currentdice.size()) {
                             values.append(Currentdice.get(index)).append(" ");
                         }
@@ -324,8 +336,14 @@ public class PlayRoundActivity extends AppCompatActivity {
                     messageBuilder.append("You may score at Category: ").append(combinations.getCategoryName(categoryReceived));
                 }
 
-                // Append the reasoning message
-                messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
+                if (selectedDiceInds.isEmpty()) {
+                    messageBuilder.setLength(0); // Clears the existing content
+                    messageBuilder.append("You may reroll all dices:");
+                }
+                else {
+                    // Append the reasoning message
+                    messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
+                }
 
                 // Set the message in the dialog
                 builder.setMessage(messageBuilder.toString());
@@ -370,9 +388,10 @@ public class PlayRoundActivity extends AppCompatActivity {
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                unhighlightBoard();
 
                 if (Tournament.currentPlayerId == COMPUTER) {
+
 
 
                     if(manualChoice){
@@ -420,6 +439,12 @@ public class PlayRoundActivity extends AppCompatActivity {
 
                     }
                 }
+
+                ImageView helpButton = findViewById(R.id.helpButton);
+                if(rollsCount >= 0 ){
+                    helpButton.setVisibility(View.VISIBLE);
+                }
+
 
 
                 // select vayesi unselect mildaina
@@ -499,6 +524,100 @@ public class PlayRoundActivity extends AppCompatActivity {
 
         });
     }
+
+    public void highlightBoard(){
+        // Loop through all the available combinations
+
+        int highlightColor = Color.parseColor("#EBEAEF"); // Highlight color
+
+        ArrayList<Integer> categoriesAvailable = combinations.availableToScoreCategories();
+
+        for (Integer categoryIndex : categoriesAvailable) {
+            // Increment by 1 because table layout indices start from 1
+            int adjustedIndex = categoryIndex + 1;
+
+            // Highlight score box
+            String scoreId = "score" + adjustedIndex;
+            int scoreResID = getResources().getIdentifier(scoreId, "id", getPackageName());
+            TextView scoreTextView = findViewById(scoreResID);
+            if (scoreTextView != null) {
+                scoreTextView.setBackgroundColor(highlightColor);
+                scoreTextView.setText(String.valueOf(combinations.getScore(categoryIndex)));
+            }
+
+            // Highlight player box
+            String playerId = "player" + adjustedIndex;
+            int playerResID = getResources().getIdentifier(playerId, "id", getPackageName());
+            TextView playerTextView = findViewById(playerResID);
+            if (playerTextView != null) {
+                playerTextView.setBackgroundColor(highlightColor);
+               playerTextView.setText(String.valueOf(Tournament.currentPlayerId));
+            }
+
+            // Highlight round box
+            String roundId = "r" + adjustedIndex;
+            int roundResID = getResources().getIdentifier(roundId, "id", getPackageName());
+            TextView roundTextView = findViewById(roundResID);
+            if (roundTextView != null) {
+                roundTextView.setBackgroundColor(highlightColor);
+                roundTextView.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+            }
+        }
+
+    }
+
+
+    public void unhighlightBoard() {
+
+        int highlightColor = Color.parseColor("#EBEAEF"); // Highlight color
+
+        // Loop through all the categories (1 to 12)
+        for (int i = 1; i <= 12; i++) {
+            // Unhighlight score box
+            String scoreId = "score" + i;
+            int scoreResID = getResources().getIdentifier(scoreId, "id", getPackageName());
+            TextView scoreTextView = findViewById(scoreResID);
+            if (scoreTextView != null) {
+                // Check if the background is GRAY and reset to transparent
+                if (scoreTextView.getBackground() instanceof ColorDrawable) {
+                    int color = ((ColorDrawable) scoreTextView.getBackground()).getColor();
+                    if (color == highlightColor) {
+                        scoreTextView.setBackgroundColor(Color.TRANSPARENT);
+                        scoreTextView.setText("-");
+                    }
+                }
+            }
+
+            // Unhighlight player box
+            String playerId = "player" + i;
+            int playerResID = getResources().getIdentifier(playerId, "id", getPackageName());
+            TextView playerTextView = findViewById(playerResID);
+            if (playerTextView != null) {
+                if (playerTextView.getBackground() instanceof ColorDrawable) {
+                    int color = ((ColorDrawable) playerTextView.getBackground()).getColor();
+                    if (color == highlightColor) {
+                        playerTextView.setBackgroundColor(Color.TRANSPARENT);
+                        playerTextView.setText("-");
+                    }
+                }
+            }
+
+            // Unhighlight round box
+            String roundId = "r" + i;
+            int roundResID = getResources().getIdentifier(roundId, "id", getPackageName());
+            TextView roundTextView = findViewById(roundResID);
+            if (roundTextView != null) {
+                if (roundTextView.getBackground() instanceof ColorDrawable) {
+                    int color = ((ColorDrawable) roundTextView.getBackground()).getColor();
+                    if (color == highlightColor) {
+                        roundTextView.setBackgroundColor(Color.TRANSPARENT);
+                        roundTextView.setText("-");
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
@@ -602,9 +721,11 @@ public class PlayRoundActivity extends AppCompatActivity {
             combinationsText.append(combination + 1).append("\n");
         }
 
+        ArrayList<Integer> potentialCategories = new ArrayList<Integer>(MainActivity.tournament.round.human.potentialCategories(Currentdice,rollsCount));
+
 
         // Loop through each available combination and apply the border to corresponding TextViews
-        for (Integer categoryNumber : availableCombinations) {
+        for (Integer categoryNumber : potentialCategories) {
 
             String textViewId = "category" + (categoryNumber + 1);
             int resID = getResources().getIdentifier(textViewId, "id", getPackageName());
@@ -615,6 +736,8 @@ public class PlayRoundActivity extends AppCompatActivity {
                 categoryTextView.setBackgroundResource(R.drawable.highlight_border);
             }
         }
+
+        highlightBoard();
 
 
         // Make only the specified buttons in availableCategories visible
@@ -627,6 +750,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
 
             }
+
         }
 
         // Loop through each score button to set up an OnClickListener
@@ -639,6 +763,8 @@ public class PlayRoundActivity extends AppCompatActivity {
 
             if (scoreButton != null) {
                 scoreButton.setOnClickListener(v -> {
+
+                    unhighlightBoard();
                     // Get the score for the clicked category
                     rollButton.setEnabled(true);
                     int score = combinations.getScore(categoryNumber);
@@ -688,6 +814,10 @@ public class PlayRoundActivity extends AppCompatActivity {
     }
 
     public void playNextTurn() {
+
+        handleGameEnd();
+        ImageView helpButton = findViewById(R.id.helpButton);
+
         String playerName = (Tournament.currentPlayerId  == 1) ? "Human" : "Computer";
 
         logger.log(playerName + "'s Turn Ended!");
@@ -704,6 +834,8 @@ public class PlayRoundActivity extends AppCompatActivity {
         initDiceBorders();
         updatePlayScores();
 
+        if (Tournament.currentPlayerId == 1) helpButton.setVisibility(View.INVISIBLE);
+        if (Tournament.currentPlayerId == 2) helpButton.setVisibility(View.INVISIBLE);
 
         playerName = (Tournament.currentPlayerId  == 1) ? "Human" : "Computer";
         logger.log(playerName+ "'s Turn Started!");
@@ -749,6 +881,8 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.INVISIBLE); // Set all buttons to invisible initially
+                scoreButton.setText("Score");       // Set text to "Available"
+                scoreButton.setClickable(true);        // Make the button unclickable
             }
         }
 
@@ -775,11 +909,16 @@ public class PlayRoundActivity extends AppCompatActivity {
                     .setTitle("Game Over")
                     .setMessage(winnerMessage)
                     .setPositiveButton("OK", (dialog, which) -> {
-                        // Redirect to MainActivity when OK is pressed
+                        // Reset Tournament and redirect to MainActivity
+                        MainActivity.tournament.round.resetRound();
+                        MainActivity.tournament = new Tournament(); // Reset the tournament instance
+
+                        // Reset the scorecard
                         combinations.resetScorecard();
+                        // Redirect to MainActivity
                         Intent intent = new Intent(PlayRoundActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Ensure a fresh MainActivity
                         startActivity(intent);
-                        finish(); // End PlayRoundActivity
                     })
                     .setCancelable(false) // Prevent dismissing the dialog without clicking OK
                     .show();
@@ -832,11 +971,12 @@ public class PlayRoundActivity extends AppCompatActivity {
 
         //ArrayList<Integer> keptDiceInd = new ArrayList<>();
 
+
+
         ImageView saveGameButton = findViewById(R.id.saveGameButton);
         ImageView helpButton = findViewById(R.id.helpButton);
 
-        saveGameButton.setVisibility(View.INVISIBLE);
-        helpButton.setVisibility(View.INVISIBLE);
+       // helpButton.setVisibility(View.INVISIBLE);
 
         // Roll the dice
         //ArrayList<Integer> diceVals = generateDice(new ArrayList<>());
@@ -858,9 +998,12 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-
+                scoreButton.setText("Available");       // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button unclickable
             }
         }
+        highlightBoard();
+
         // decidedToKeepMsg(diceVals, keptDiceInd,1);
         // Use a Handler to delay the scoring logic
         Handler handler = new Handler();
@@ -869,19 +1012,24 @@ public class PlayRoundActivity extends AppCompatActivity {
             if (!computerFirstRoll(Currentdice, keptDiceInd)) {
 
 
-                // Prepare the message string to show kept dice values
-                StringBuilder messageBuilder = new StringBuilder("Computer decided to keep these dices: \n");
+                StringBuilder messageBuilder = new StringBuilder();
+
+                if (!keptDiceInd.isEmpty()) {
+                    messageBuilder.append("Computer decided to keep these dice: \n");
+                } else {
+                    messageBuilder.append("Computer decided to roll all dice. \n");
+                }
                 for (int index : keptDiceInd) {
                     messageBuilder.append(Currentdice.get(index)).append(" ");
                     diceViews[index].setBackgroundResource(R.drawable.blue_border); // Highlight selected
                 }
 
+
+
+
+                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());}
+
                 logger.log(messageBuilder.toString());
-
-
-
-
-                messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());
 
                 new AlertDialog.Builder(this) // Replace with your activity's context
                         .setTitle("Computer's Decision")
@@ -897,8 +1045,8 @@ public class PlayRoundActivity extends AppCompatActivity {
             }
 
             // Make the buttons visible again after scoring
-            saveGameButton.setVisibility(View.VISIBLE);
-            helpButton.setVisibility(View.VISIBLE);
+            //saveGameButton.setVisibility(View.VISIBLE);
+            //helpButton.setVisibility(View.VISIBLE);
         }, 1000); // 1-second delay
 
         //saveGameButton.setVisibility(View.VISIBLE);
@@ -908,7 +1056,7 @@ public class PlayRoundActivity extends AppCompatActivity {
     public boolean computerFirstRoll(ArrayList<Integer> diceVals, ArrayList<Integer> keptDiceInd) {
         // Keep dice indices (if any logic applies)
         //ArrayList<Integer> keptDiceInd = new ArrayList<>();
-
+        displayPotentialComputer(0);
 
         int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals, 0, keptDiceInd);
         if (categoryReceived == -1) {
@@ -924,6 +1072,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                     .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
                     .setPositiveButton("OK", (dialog, which) -> {
                         // Update the scorecard UI after the user presses OK
+                        unhighlightBoard();
                         updateScorecardUI(categoryReceived);
                     })
                     .setCancelable(false) // Prevent dismissing the dialog without clicking OK
@@ -962,6 +1111,7 @@ public class PlayRoundActivity extends AppCompatActivity {
     public void computerSecondRoll(ArrayList<Integer> keptDiceInd) {
 
         initBoard();
+        displayPotentialComputer(1);
 
         ArrayList<Integer> previousKeptDiceInd = new ArrayList<>(keptDiceInd);
         //keptDiceInd.clear();
@@ -988,9 +1138,11 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-
+                scoreButton.setText("Available");       // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button unclickable
             }
         }
+        highlightBoard();
 
 
         int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, Currentdice, 1, keptDiceInd);
@@ -1006,16 +1158,23 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
                 // Prepare the message string to show kept dice values
-                StringBuilder messageBuilder = new StringBuilder("Computer decided to keep these dices: \n");
+                StringBuilder messageBuilder = new StringBuilder();
+
+                if (!keptDiceInd.isEmpty()) {
+                    messageBuilder.append("Computer decided to keep these dice: \n");
+                } else {
+                    messageBuilder.append("Computer decided to roll all dice: \n");
+                }
                 for (int index : keptDiceInd) {
                     messageBuilder.append(Currentdice.get(index)).append(" ");
                     diceViews[index].setBackgroundResource(R.drawable.blue_border); // Highlight selected
                 }
 
+
+
+                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());}
+
                 logger.log(messageBuilder.toString());
-
-                messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());
-
                 new AlertDialog.Builder(this) // Replace with your activity's context
                         .setTitle("Computer's Decision")
                         .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
@@ -1038,6 +1197,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                         .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
                         .setPositiveButton("OK", (dialog, which) -> {
                             // Update the scorecard UI after the user presses OK
+                            unhighlightBoard();
                             updateScorecardUI(categoryReceived);
                         })
                         .setCancelable(false) // Prevent dismissing the dialog without clicking OK
@@ -1047,9 +1207,8 @@ public class PlayRoundActivity extends AppCompatActivity {
 
             // Make the buttons visible again after scoring
             saveGameButton.setVisibility(View.VISIBLE);
-            helpButton.setVisibility(View.VISIBLE);
+            //helpButton.setVisibility(View.VISIBLE);
         }, 1000); // 1-second delay
-
 
     }
 
@@ -1057,6 +1216,7 @@ public class PlayRoundActivity extends AppCompatActivity {
     public void computerThirdRoll(ArrayList<Integer> keptDiceInd) {
 
         initBoard();
+        displayPotentialComputer(2);
 
         ImageView saveGameButton = findViewById(R.id.saveGameButton);
         ImageView helpButton = findViewById(R.id.helpButton);
@@ -1078,10 +1238,11 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-
+                scoreButton.setText("Available");       // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button unclickable
             }
         }
-
+        highlightBoard();
 
         int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, Currentdice, 2, keptDiceInd);
         if (categoryReceived == -1) {
@@ -1091,6 +1252,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                     .setMessage("Nothing to Score, skipping turn")
                     .setPositiveButton("OK", (dialog, which) -> {
                         dialog.dismiss(); // Dismiss the dialog
+                        unhighlightBoard();
                         playNextTurn();   // Call the next turn logic
                     })
                     .setCancelable(false) // Prevent dismissing the dialog without clicking OK
@@ -1103,9 +1265,10 @@ public class PlayRoundActivity extends AppCompatActivity {
             logger.log("Computer decided to score in "+ combinations.getCategoryName(categoryReceived));
             new AlertDialog.Builder(this)
                     .setTitle("Computer's Decision")
-                    .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived))
+                    .setMessage("The computer has decided to score in: " + combinations.getCategoryName(categoryReceived)+ "\n\nSince there no rolls left and this gives highest score.")
                     .setPositiveButton("OK", (dialog, which) -> {
                         // Update the scorecard UI after the user presses OK
+                        unhighlightBoard();
                         updateScorecardUI(categoryReceived);
                     })
                     .setCancelable(false) // Prevent dismissing the dialog without clicking OK
@@ -1290,6 +1453,25 @@ public class PlayRoundActivity extends AppCompatActivity {
         builder.show();
     }
 
+    public void displayPotentialComputer(int rollCount){
+
+        ArrayList<Integer> potentialCategories = new ArrayList<Integer>(MainActivity.tournament.round.computer.potentialCategories(Currentdice,rollCount));
+
+
+        // Loop through each available combination and apply the border to corresponding TextViews
+        for (Integer categoryNumber : potentialCategories) {
+
+            String textViewId = "category" + (categoryNumber + 1);
+            int resID = getResources().getIdentifier(textViewId, "id", getPackageName());
+
+            TextView categoryTextView = findViewById(resID);
+            if (categoryTextView != null) {
+                // Apply the highlight border to the TextView
+                categoryTextView.setBackgroundResource(R.drawable.highlight_border);
+            }
+        }
+    }
+
     public void computerRoll(){
         compRollCount++;
         updateRollsLeftText(compRollCount);
@@ -1302,6 +1484,7 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
         updatePlayScores();
     }
+
 
 }
 

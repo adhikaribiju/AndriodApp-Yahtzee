@@ -3,20 +3,23 @@ package com.example.yahtzee.Model;
 import com.example.yahtzee.Model.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Computer extends Player {
-	
-	public class Pair<K, V> {
-	    public K first;
-	    public V second;
 
-	    public Pair(K first, V second) {
-	        this.first = first;
-	        this.second = second;
-	    }
-	}
+    public class Pair<K, V> {
+        public K first;
+        public V second;
+
+        public Pair(K first, V second) {
+            this.first = first;
+            this.second = second;
+        }
+    }
 
     private final int COMPUTER = 2;
     private final int KEEP_ERROR = -99;
@@ -40,22 +43,22 @@ public class Computer extends Player {
     private ArrayList<Integer> currentKeptDiceInd;
 
 
-
     public Computer() {
         num_rolls = 1;
         reroll = false;
         keepError = false;
         isScoreSet = false;
         reasoningMsg = "";
-        tempMsg ="";
+        tempMsg = "";
         indicesAvailableToKeep = new ArrayList<>();
         currentKeptDiceInd = new ArrayList<>();
     }
 
-    public String getReasoningMsg(){
-        return  reasoningMsg;
+    public String getReasoningMsg() {
+        return reasoningMsg;
     }
-    public int playTurnt(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd){
+
+    public int playTurnt(int player_id, ArrayList<Integer> dice, int rollCount, ArrayList<Integer> keptDiceInd) {
         // based on the dice combination, find out the available combinations
         // if there are available combinations, find out the highest one, score it and return the category number
         // if not, return -1
@@ -72,11 +75,13 @@ public class Computer extends Player {
         findCategoryScore();
 
 
-        categoryToReturn = computerDecide(player_id, dice,rollCount,keptDiceInd);
+        categoryToReturn = computerDecide(player_id, dice, rollCount, keptDiceInd);
 
         // check if indicesAvailableToKeep has all the values in keptDiceInd
 
-        if (!keptDiceInd.containsAll(indicesAvailableToKeep)) {categoryToReturn = KEEP_ERROR;}
+        if (!keptDiceInd.containsAll(indicesAvailableToKeep)) {
+            categoryToReturn = KEEP_ERROR;
+        }
 
         if (categoryToReturn == KEEP_ERROR) {
             keptDiceInd.clear();
@@ -87,17 +92,15 @@ public class Computer extends Player {
         indicesAvailableToKeep.clear();
         currentKeptDiceInd.clear();
 
-        if (rollCount!=2){
-            if (categoryToReturn== KEEP_ERROR) return -1;
+        if (rollCount != 2) {
+            if (categoryToReturn == KEEP_ERROR) return -1;
             return categoryToReturn;
-        }
-        else {
-            if (categoryToReturn == -1 || categoryToReturn== KEEP_ERROR){ //3rd roll ma cha ra kunai ni best category available chaina vane
+        } else {
+            if (categoryToReturn == -1 || categoryToReturn == KEEP_ERROR) { //3rd roll ma cha ra kunai ni best category available chaina vane
 
                 return scoreHighestAvailable();
 
-            }
-            else{
+            } else {
                 return categoryToReturn;
             }
         }
@@ -158,9 +161,9 @@ public class Computer extends Player {
         scoresAvailable.clear();
 
         if (!availableCategory.isEmpty()) {
-            for (int i = 1; i <= DICE_COUNT+1; i++) {
+            for (int i = 1; i <= DICE_COUNT + 1; i++) {
                 int score = board.calculateUpperSectionScore(i);
-                if ((score != 0) && (!board.isCategoryFill(i-1))) {
+                if ((score != 0) && (!board.isCategoryFill(i - 1))) {
                     scoresAvailable.add(new Pair<>(i - 1, score));
                 }
             }
@@ -188,8 +191,8 @@ public class Computer extends Player {
         }
     }
 
-    public int computerDecide(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd) {
-       // isScoreSet = false;
+    public int computerDecide(int player_id, ArrayList<Integer> dice, int rollCount, ArrayList<Integer> keptDiceInd) {
+        // isScoreSet = false;
 //        for (int i = scoresAvailable.size() - 1; i >= 0; i--) {
 //            if (scoresAvailable.get(i).second >= 20 && !board.isCategoryFill(scoresAvailable.get(i).first)) {
 //                board.setScore(scoresAvailable.get(i).first, 2);
@@ -205,20 +208,17 @@ public class Computer extends Player {
 //        }
 
 
-
-
-
-            if (lowerSectionFilled()) {
-                // try upper section fill
-                if (!availableCategory.isEmpty()) {
-                    return scoreHighestAvailable();
-                } else {
-                    // No change to keptDices
-                    // Reroll all the dices
-                    // Computer Decided to reroll all the dices since no categories available to score
-                    return -1; // **** IMP **** No change to keptDices
-                }
+        if (lowerSectionFilled()) {
+            // try upper section fill
+            if (!availableCategory.isEmpty()) {
+                return scoreHighestAvailable();
             } else {
+                // No change to keptDices
+                // Reroll all the dices
+                // Computer Decided to reroll all the dices since no categories available to score
+                return -1; // **** IMP **** No change to keptDices
+            }
+        } else {
 //                 if (isSequentialAvailable()) {
 //                    board.updateDice(dice);
 //                    board.displayAvailableCombinations();
@@ -227,11 +227,11 @@ public class Computer extends Player {
 //                    tryYahtzeeOrFullHouse();
 //                    return -1;
 //                }
-                return checkLowerSection(player_id, dice,  rollCount,keptDiceInd);
-            }
+            return checkLowerSection(player_id, dice, rollCount, keptDiceInd);
+        }
     }
 
-    public int checkLowerSection(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd){
+    public int checkLowerSection(int player_id, ArrayList<Integer> dice, int rollCount, ArrayList<Integer> keptDiceInd) {
         int[] count = new int[7];
         boolean fourOfAKind = false;
         boolean threeOfAKind = false;
@@ -268,17 +268,16 @@ public class Computer extends Player {
         }
 
 
-        if(!board.isCategoryFill(11)) {
-            if (board.hasYahtzee()){
+        if (!board.isCategoryFill(11)) {
+            if (board.hasYahtzee()) {
                 // score it
-                board.setScore(11,COMPUTER);
+                board.setScore(11, COMPUTER);
                 return 11;
-            }
-            else{
+            } else {
                 // let's try to get Yahtzee
-                if(board.hasFourOfAKind()){
-                    for(int i = 0; i < dice.size(); i++) {
-                        if (targetValueFourOfAKind == dice.get(i)){
+                if (board.hasFourOfAKind()) {
+                    for (int i = 0; i < dice.size(); i++) {
+                        if (targetValueFourOfAKind == dice.get(i)) {
                             //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
                             keptDiceInd.add(i);
                             indicesAvailableToKeep.add(i);
@@ -286,18 +285,17 @@ public class Computer extends Player {
                         }
                     }
                     return -1;
-                }
-                else{
-                    if(board.hasThreeOfAKind()){
+                } else {
+                    if (board.hasThreeOfAKind()) {
 
                         //check full house// if available scored...
                         if (!board.isCategoryFill(8) && board.hasFullHouse()) {
-                            board.setScore(8,COMPUTER);
+                            board.setScore(8, COMPUTER);
                             return 8;
                         }
 
-                        for(int i = 0; i < dice.size(); i++) {
-                            if (targetValueThreeOfAKind== dice.get(i)){
+                        for (int i = 0; i < dice.size(); i++) {
+                            if (targetValueThreeOfAKind == dice.get(i)) {
                                 //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
                                 keptDiceInd.add(i);
                                 indicesAvailableToKeep.add(i);
@@ -305,8 +303,7 @@ public class Computer extends Player {
                             }
                         }
                         return -1;
-                    }
-                    else{
+                    } else {
                         return trySequential(player_id, dice, rollCount, keptDiceInd);
 //                        if(targetValueTwoOfAKind!=-1){
 //                            for(int i = 0; i < dice.size(); i++) {
@@ -325,8 +322,7 @@ public class Computer extends Player {
                     }
                 }
             }
-        }
-        else {
+        } else {
             // Yahtzee is not AVAILABLE
 
             // check full house
@@ -340,39 +336,37 @@ public class Computer extends Player {
 
 
             // check if Four of a kind available to score, if yes, score it
-            if(!board.isCategoryFill(7)) {
-                if (board.hasFourOfAKind()){
+            if (!board.isCategoryFill(7)) {
+                if (board.hasFourOfAKind()) {
 //                    if(!board.isCategoryFill(6)){
 //                        // score it
 //                        board.setScore(6,COMPUTER);
 //                        return 6;
 //                    }
                     // score it
-                    board.setScore(7,COMPUTER);
+                    board.setScore(7, COMPUTER);
                     return 7;
-                }
-                else{
+                } else {
                     // let's try to get Four of a kind
-                        if(board.hasThreeOfAKind()){
+                    if (board.hasThreeOfAKind()) {
 
-                            //check full house// if available scored...
-                            if (!board.isCategoryFill(8) && board.hasFullHouse()) {
-                                board.setScore(8,COMPUTER);
-                                return 8;
-                            }
-
-                            for(int i = 0; i < dice.size(); i++) {
-                                if (targetValueThreeOfAKind== dice.get(i)){
-                                    //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                                    keptDiceInd.add(i);
-                                    indicesAvailableToKeep.add(i);
-                                    reasoningMsg = "Four of a kind is available and there are three of a kind on the current dice combination.";
-                                }
-                            }
-                            return -1;
+                        //check full house// if available scored...
+                        if (!board.isCategoryFill(8) && board.hasFullHouse()) {
+                            board.setScore(8, COMPUTER);
+                            return 8;
                         }
-                        else{
-                            return trySequential(player_id, dice, rollCount, keptDiceInd);
+
+                        for (int i = 0; i < dice.size(); i++) {
+                            if (targetValueThreeOfAKind == dice.get(i)) {
+                                //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
+                                keptDiceInd.add(i);
+                                indicesAvailableToKeep.add(i);
+                                reasoningMsg = "Four of a kind is available and there are three of a kind on the current dice combination.";
+                            }
+                        }
+                        return -1;
+                    } else {
+                        return trySequential(player_id, dice, rollCount, keptDiceInd);
 //                        if(targetValueTwoOfAKind!=-1){
 //                            for(int i = 0; i < dice.size(); i++) {
 //
@@ -390,22 +384,20 @@ public class Computer extends Player {
 
                     }
                 }
-            }
-            else{
+            } else {
                 // Four of a kind is not available...
 
                 // if three of a kind available, score it
-                if(!board.isCategoryFill(6)) {
-                    if (board.hasThreeOfAKind()){
+                if (!board.isCategoryFill(6)) {
+                    if (board.hasThreeOfAKind()) {
                         // score it
-                        board.setScore(6,COMPUTER);
+                        board.setScore(6, COMPUTER);
                         return 6;
-                    }
-                    else{
+                    } else {
                         // let's try to get Three of a kind
                         // if two of a kind availble
-                        if(targetValueTwoOfAKind!=-1){
-                            for(int i = 0; i < dice.size(); i++) {
+                        if (targetValueTwoOfAKind != -1) {
+                            for (int i = 0; i < dice.size(); i++) {
 
                                 if (targetValueTwoOfAKind == dice.get(i)) {
                                     //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
@@ -415,13 +407,11 @@ public class Computer extends Player {
                                 }
                             }
                             return -1;
-                        }
-                        else {
+                        } else {
                             return trySequential(player_id, dice, rollCount, keptDiceInd);
                         }
                     }
-                }
-                else {
+                } else {
                     // 3 of a kind not available, meaning Yahtzee, four of a kind, three of a kind are all filled
                     // if full house not filled, try to get it
 
@@ -466,7 +456,7 @@ public class Computer extends Player {
 //                    else{
 //                        return trySequential(player_id, dice, rollCount, keptDiceInd);
 //                    }
-                     // if filled try sequential
+                    // if filled try sequential
                     return trySequential(player_id, dice, rollCount, keptDiceInd);
                 }
             }
@@ -492,10 +482,11 @@ public class Computer extends Player {
 //        }
 
         // yo chai last roll ma garne kura
-        int highestScore=0,highestIndex=-1;
+        int highestScore = 0, highestIndex = -1;
+        findCategoryScore();
 
 
-        for (int i = 0; i < scoresAvailable.size(); i++) {
+        for (int i = scoresAvailable.size()-1; i >= 0; i--) {
             if (!board.isCategoryFill(scoresAvailable.get(i).first) && scoresAvailable.get(i).second > highestScore) {
                 highestScore = scoresAvailable.get(i).second;
                 highestIndex = i;
@@ -507,8 +498,7 @@ public class Computer extends Player {
             isScoreSet = true;
             return scoresAvailable.get(highestIndex).first;
 
-        }
-        else{
+        } else {
             return -1;
         }
 
@@ -626,7 +616,7 @@ public class Computer extends Player {
         }
     }
 
-    public int trySequential(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd) {
+    public int trySequential(int player_id, ArrayList<Integer> dice, int rollCount, ArrayList<Integer> keptDiceInd) {
         int[] count = new int[7];
         boolean threeSequenceFound = false;
         boolean fourSequenceFound = false;
@@ -664,7 +654,6 @@ public class Computer extends Player {
         }
 
 
-
         boolean threeOfAKind = false;
         int targetValueThreeOfAKind = -1;
         int targetValueTwoOfAKind = -1;
@@ -685,146 +674,187 @@ public class Computer extends Player {
             }
         }
 
-        if(!board.isCategoryFill(10)){
+        if (!board.isCategoryFill(10)) {
             // if five straight available to score
-            if(board.hasFiveStraight()){
-                board.setScore(10,COMPUTER);
+            if (board.hasFiveStraight()) {
+                board.setScore(10, COMPUTER);
                 return 10;
-            }
-            else {
+            } else {
+                int blockIndex = findBlockingDice(dice);
                 // try to get five straight
                 if (board.hasFourStraight()) {
-                    int blockIndex = findBlockingDice(dice);
-                    if(blockIndex != -1 ){
+                    //int blockIndex = findBlockingDice(dice);
+                    if (blockIndex != -1) {
                         indicesAvailableToKeep.add(blockIndex);
                         //if(!indicesAvailableToKeep.contains(blockIndex)) return KEEP_ERROR;
                         keptDiceInd.add(blockIndex);
                         reasoningMsg = "Five Straight is available and there is one more dice value to match it.";
-
-
-                    }
-
-                    // Manually determine the Four Straight sequence and add unmatched dice to keptDice
-                    for (int i = 0; i < dice.size(); i++) {
-                        if (isPartOfFourStraight(dice.get(i), dice)) {
-                            if(repeatCheck && targetValueTwoOfAKind == dice.get(i)){
-                                repeatCheck = false;
-                                continue;
-                            }
-                            //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                            keptDiceInd.add(i); // Store the index of the die
-                            indicesAvailableToKeep.add(i);
-                            reasoningMsg = "Five Straight is available and there are four straight on the current dice combination.";
-                        }
-                    }
-                    return -1;
-                } else if (threeSequenceFound) {
-                    // Manually determine the Three Straight sequence and add unmatched dice to keptDice
-                    for (int i = 0; i < dice.size(); i++) {
-                        if (isPartOfThreeStraight(dice.get(i), dice)) {
-                            if(repeatCheck && (targetValueTwoOfAKind == dice.get(i))){
-                                repeatCheck = false;
-                                continue;
-                            }
-                            //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                            keptDiceInd.add(i); // Store the index of the die
-                            indicesAvailableToKeep.add(i);
-                            reasoningMsg = "Five Straight is available and there are three straight on the current dice combination.";
-                        }
-                    }
-                    return -1;
-                } else if (twoSequenceFound) {
-                    // Manually determine the Two Straight sequence and add unmatched dice to keptDice
-                    for (int i = 0; i < dice.size(); i++) {
-                        if (isPartOfTwoStraight(dice.get(i), dice)) {
-                            //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                            keptDiceInd.add(i); // Store the index of the die
-                            indicesAvailableToKeep.add(i);
-                            reasoningMsg = "Five Straight is available and there are two straight on the current dice combination.";
-                        }
-                    }
-                    return -1;
-                }
-
-            }
-
-        }
-        else {
-
-            if(!board.isCategoryFill(9))
-            {
-                // try to get four stright
-                if (board.hasFourStraight()) {
-                    board.setScore(9,COMPUTER);
-                    return 9;
-
-                } else {
-                    if (threeSequenceFound) {
-                        // Manually determine the Three Straight sequence and add unmatched dice to keptDice
-                        for (int i = 0; i < dice.size(); i++) {
-                            if (isPartOfThreeStraight(dice.get(i), dice)) {
-                                //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                                keptDiceInd.add(i); // Store the index of the die
-                                indicesAvailableToKeep.add(i);
-                                reasoningMsg = "Four Straight is available and there are three straight on the current dice combination.";
-                            }
-                        }
                         return -1;
                     }
-                    else {
-                        if (twoSequenceFound) {
-                            // Manually determine the Two Straight sequence and add unmatched dice to keptDice
-                            for (int i = 0; i < dice.size(); i++) {
-                                if (isPartOfTwoStraight(dice.get(i), dice)) {
-                                    //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                                    keptDiceInd.add(i); // Store the index of the die
-                                    indicesAvailableToKeep.add(i);
-                                    reasoningMsg = "Four Straight is available and there are two straight on the current dice combination.";
-                                }
-                            }
-                            return -1;
-                        }
+                    keptDiceInd.addAll(getIndicesInFourStraight(dice));
+                    indicesAvailableToKeep = getIndicesInFourStraight(dice);
+                    reasoningMsg = "Five Straight is available and there are four straight on the current dice combination.";
+                    return -1;
+                }
+                else if (blockIndex != -1) {
+                    ArrayList<Integer> diceInd = new ArrayList<>();
+                    for (int i = 0; i < 5; i++) {
+                        diceInd.add(i);
                     }
+                    diceInd.remove(blockIndex);
+                    keptDiceInd.addAll(diceInd);
+                    indicesAvailableToKeep.addAll(diceInd);
+                    reasoningMsg = "Five Straight is available and there is one more dice value to match it.";
+                    return -1;
+                }
+                else if (threeSequenceFound) {
+                    keptDiceInd.addAll(getIndicesInThreeStraight(dice));
+                    indicesAvailableToKeep = getIndicesInThreeStraight(dice);
+                    reasoningMsg = "Five Straight is available and there are three straight on the current dice combination.";
+                    return -1;
+                } else{
+
+                    if(!board.isCategoryFill(8) && findOddDiceIndex(dice) != -1){
+
+                        ArrayList<Integer> diceInd = new ArrayList<>();
+                        for (int i = 0; i < 5; i++) {
+                            diceInd.add(i);
+                        }
+                        diceInd.remove(findOddDiceIndex(dice));
+
+                        keptDiceInd.addAll(diceInd);
+                        indicesAvailableToKeep.addAll(diceInd);
+                        reasoningMsg = "Full House is available and there are 2 two of a kinds on the current dice combination.";
+                        return -1;
+                    }
+
+//                    if (twoSequenceFound) {
+//                    keptDiceInd.addAll(getIndicesInTwoStraight(dice));
+//                    indicesAvailableToKeep = getIndicesInTwoStraight(dice);
+//                    reasoningMsg = "Five Straight is available and there are two straight on the current dice combination.";
+//                    return -1;
+//                    // Manually determine the Two Straight sequence and add unmatched dice to keptDice
+//                    }
                 }
             }
-            else
-            {
+        } else {
+            if (!board.isCategoryFill(9)) {
+                // try to get four straight
+                if (board.hasFourStraight()) {
+                    board.setScore(9, COMPUTER);
+                    return 9;
+                } else {
+                    if (threeSequenceFound) {
+                        keptDiceInd.addAll(getIndicesInThreeStraight(dice));
+                        indicesAvailableToKeep = getIndicesInThreeStraight(dice);
+                        reasoningMsg = "Four Straight is available and there are three straight on the current dice combination.";
+                        return -1;
+                    } else {
+                        if (twoSequenceFound) {
+                            keptDiceInd.addAll(getIndicesInTwoStraight(dice));
+                            indicesAvailableToKeep = getIndicesInTwoStraight(dice);
+                            reasoningMsg = "Four Straight is available and there are two straight on the current dice combination.";
+                            return -1;
+                        }
+                        else{
+                            if(findOddDiceIndex(dice) != -1){
+                                ArrayList<Integer> diceInd = new ArrayList<>();
+                                for (int i = 0; i < 5; i++) {
+                                    diceInd.add(i);
+                                }
+                                diceInd.remove(findOddDiceIndex(dice));
 
-                if(!board.isCategoryFill(8)) {
+                                keptDiceInd.addAll(diceInd);
+                                indicesAvailableToKeep.addAll(diceInd);
+                                reasoningMsg = "Full House is available and there are 2 pair of same dices on the current dice combination.";
+                                return -1;
+                            }
+
+
+                            if (board.hasThreeOfAKind()) {
+
+                                for (int i = 0; i < dice.size(); i++) {
+                                    if (targetValueThreeOfAKind == dice.get(i)) {
+                                        //if (!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
+                                        keptDiceInd.add(i);
+                                        indicesAvailableToKeep.add(i);
+                                        reasoningMsg = "Full House is available and there are three of a kind on the current dice combination.";
+                                    }
+                                }
+                                return -1;
+                            } else {
+//                                if (targetValueTwoOfAKind != -1) {
+//                                    for (int i = 0; i < dice.size(); i++) {
+//
+//                                        if (targetValueTwoOfAKind == dice.get(i)) {
+//                                            //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
+//                                            keptDiceInd.add(i);
+//                                            indicesAvailableToKeep.add(i);
+//                                            reasoningMsg = "Full House is available and there are two of a kind on the current dice combination.";
+//                                        }
+//                                    }
+//                                    return -1;
+//                                }
+                                return -1;
+                            }
+                        }
+                    }
+
+
+
+
+
+                }
+            } else {
+
+                if (!board.isCategoryFill(8)) {
                     if (board.hasFullHouse()) {
                         // score it
                         board.setScore(8, COMPUTER);
                         return 8;
-                    }else {
+                    } else {
 
-                        if(findOddDiceIndex(dice)!=-1){
-                            for (int i = 0; i < dice.size(); i++) {
-                                if (findOddDiceIndex(dice) != i ) {
-                                    //if (!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
-                                    keptDiceInd.add(i);
-                                    reasoningMsg = "Full House is available and there is only one dice the is unmatched.";
-                                }
+                        //check full house// if available scored...
+                        if (!board.isCategoryFill(8) && board.hasFullHouse()) {
+                            board.setScore(8, COMPUTER);
+                            return 8;
+                        }
+
+                        if(findOddDiceIndex(dice) != -1){
+                            ArrayList<Integer> diceInd = new ArrayList<>();
+                            for (int i = 0; i < 5; i++) {
+                                diceInd.add(i);
                             }
+                            diceInd.remove(findOddDiceIndex(dice));
+
+                            keptDiceInd.addAll(diceInd);
+                            indicesAvailableToKeep.addAll(diceInd);
+                            reasoningMsg = "Full House is available and there are 2 pair of same dices on the current dice combination.";
                             return -1;
                         }
 
 
-
-                        if(board.hasThreeOfAKind()) {
+                        if (board.hasThreeOfAKind()) {
 
                             for (int i = 0; i < dice.size(); i++) {
                                 if (targetValueThreeOfAKind == dice.get(i)) {
                                     //if (!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
                                     keptDiceInd.add(i);
+                                    indicesAvailableToKeep.add(i);
                                     reasoningMsg = "Full House is available and there are three of a kind on the current dice combination.";
                                 }
                             }
                             return -1;
-                        }
-                        else{
+                        } else {
 
-                            if(targetValueTwoOfAKind!=-1){
-                                for(int i = 0; i < dice.size(); i++) {
+                            //check full house// if available scored...
+                            if (!board.isCategoryFill(8) && board.hasFullHouse()) {
+                                board.setScore(8, COMPUTER);
+                                return 8;
+                            }
+
+                            if (targetValueTwoOfAKind != -1) {
+                                for (int i = 0; i < dice.size(); i++) {
 
                                     if (targetValueTwoOfAKind == dice.get(i)) {
                                         //if(!indicesAvailableToKeep.contains(i)) return KEEP_ERROR;
@@ -835,16 +865,32 @@ public class Computer extends Player {
                                 }
                                 return -1;
                             }
-                            else {
-                                return -1;
-                            }
+                            return -1;
                         }
                     }
                 }
                 return -1;
             }
         }
+        return -1;
+    }
 
+    public int findOddOneOutIndex(ArrayList<Integer> dice) {
+        // Create a map to count occurrences of each dice value
+        HashMap<Integer, Integer> frequencyMap = new HashMap<>();
+
+        // Populate the frequency map
+        for (int die : dice) {
+            frequencyMap.put(die, frequencyMap.getOrDefault(die, 0) + 1);
+        }
+        // Check for the value that appears only once
+        for (int i = 0; i < dice.size(); i++) {
+            if (frequencyMap.get(dice.get(i)) == 1) {
+                return i; // Return the index of the odd one
+            }
+        }
+
+        // If no odd one found, return -1
         return -1;
     }
 
@@ -854,37 +900,45 @@ public class Computer extends Player {
 
         // Count occurrences of each dice value
         for (int die : dice) {
-            if (die >= 1 && die <= 6) count[die]++;
+            if (die >= 1 && die <= 6) {
+                count[die]++;
+            }
         }
 
-        // Check for potential five straight sequences and find the blocking dice
-        for (int start = 1; start <= 2; start++) { // Start of the sequence (1-2 or 2-6)
-            boolean isStraightPossible = true;
-            ArrayList<Integer> missingNumbers = new ArrayList<>();
+        // Check potential five-straight sequences
+        for (int start = 1; start <= 2; start++) { // Check ranges 1-5 and 2-6
+            int missingCount = 0;
+            int missingValue = -1;
 
-            // Check for missing numbers in the sequence
+            // Verify the sequence and identify missing values
             for (int i = start; i < start + 5; i++) {
-                if (count[i] == 0) {
-                    isStraightPossible = false;
-                    missingNumbers.add(i);
+                if (i >= 1 && i <= 6) { // Ensure bounds are respected
+                    if (count[i] == 0) {
+                        missingCount++;
+                        missingValue = i; // Track the missing value
+                    }
+                    if (missingCount > 1) {
+                        break; // More than one missing number, not a valid sequence
+                    }
                 }
             }
 
-            // If one missing number is found, identify its index
-            if (!isStraightPossible && missingNumbers.size() == 1) {
-                int missingNumber = missingNumbers.get(0);
-
-                // Find the index of the dice that prevents the straight
+            // If exactly one value is missing, check for the blocking dice
+            if (missingCount == 1) {
                 for (int i = 0; i < dice.size(); i++) {
-                    if (dice.get(i) == missingNumber) {
+                    if (dice.get(i) == missingValue) {
                         return i; // Return the index of the blocking dice
                     }
                 }
             }
         }
 
-        return -1; // Return -1 if no blocking dice found or already a five straight
+        // If no blocking dice is found, return -1
+        return -1;
     }
+
+
+
 
     public int findOddDiceIndex(ArrayList<Integer> dice) {
         int[] count = new int[7]; // Array to count occurrences of each dice value
@@ -917,8 +971,6 @@ public class Computer extends Player {
     }
 
 
-
-
     private boolean isPartOfFourStraight(int die, ArrayList<Integer> dice) {
         // Check if this die is part of any four-sequence
         return (dice.contains(die - 3) && dice.contains(die - 2) && dice.contains(die - 1)) ||
@@ -926,6 +978,7 @@ public class Computer extends Player {
                 (dice.contains(die - 1) && dice.contains(die + 1) && dice.contains(die + 2)) ||
                 (dice.contains(die + 1) && dice.contains(die + 2) && dice.contains(die + 3));
     }
+
     private boolean isPartOfThreeStraight(int die, ArrayList<Integer> dice) {
         // Check if this die is part of any three-sequence
         return (dice.contains(die - 2) && dice.contains(die - 1)) ||
@@ -938,4 +991,118 @@ public class Computer extends Player {
         return dice.contains(die - 1) || dice.contains(die + 1);
     }
 
+
+    public ArrayList<Integer> getIndicesInThreeStraight(ArrayList<Integer> dice) {
+        ArrayList<Integer> indices = new ArrayList<>();
+        HashSet<Integer> used = new HashSet<>();
+
+        for (int i = 0; i < dice.size(); i++) {
+            int die = dice.get(i);
+            if (!used.contains(die) && isPartOfThreeStraight(die, dice)) {
+                indices.add(i); // Add index of the die
+                used.add(die);  // Mark die as used in this sequence
+            }
+        }
+
+        return indices;
+    }
+
+    public ArrayList<Integer> getIndicesInFourStraight(ArrayList<Integer> dice) {
+        ArrayList<Integer> indices = new ArrayList<>();
+        HashSet<Integer> used = new HashSet<>();
+
+        for (int i = 0; i < dice.size(); i++) {
+            int die = dice.get(i);
+            if (!used.contains(die) && isPartOfFourStraight(die, dice)) {
+                indices.add(i); // Add index of the die
+                used.add(die);  // Mark die as used in this sequence
+            }
+        }
+    return indices;
+    }
+
+    public ArrayList<Integer> getIndicesInTwoStraight(ArrayList<Integer> dice) {
+        ArrayList<Integer> indices = new ArrayList<>();
+        HashSet<Integer> used = new HashSet<>();
+
+        for (int i = 0; i < dice.size(); i++) {
+            int die = dice.get(i);
+            if (!used.contains(die) && isPartOfTwoStraight(die, dice)) {
+                indices.add(i); // Add index of the die
+                used.add(die);  // Mark die as used in this sequence
+            }
+        }
+
+        return indices;
+    }
+
+
+    public ArrayList<Integer> potentialCategories(ArrayList<Integer> dice, int rollCount) {
+
+        ArrayList<Integer> potentialOnes = new ArrayList<>();
+        int[] count = new int[7];
+        boolean threeSequenceFound = false;
+        int targetValueTwoOfAKind = -1;
+
+        board.updateDice(dice);
+        board.countDiceFace();
+
+
+        for (int i = 1; i < count.length; i++) {
+            if (count[i] >= 2) {
+                targetValueTwoOfAKind = i;
+            }
+        }
+
+        // Count occurrences of each dice value
+        for (int die : dice) {
+            if (die >= 1 && die <= 6) count[die]++;
+        }
+
+        // Check for three-sequence
+        if ((count[1] >= 1 && count[2] >= 1 && count[3] >= 1) ||
+                (count[2] >= 1 && count[3] >= 1 && count[4] >= 1) ||
+                (count[3] >= 1 && count[4] >= 1 && count[5] >= 1) ||
+                (count[4] >= 1 && count[5] >= 1 && count[6] >= 1)) {
+            threeSequenceFound = true;
+        }
+
+
+        // upper section
+        for (int i = 1; i <= 6; i++) {
+            int score = board.calculateUpperSectionScore(i);
+            if ((score > 0) && !board.isCategoryFill(i-1)) {
+                potentialOnes.add(i - 1);
+            }
+        }
+
+        if (rollCount != -2) {
+            if (board.hasThreeOfAKind()) {
+                if ( !board.isCategoryFill(11)) potentialOnes.add(11);
+                if ( !board.isCategoryFill(8)) potentialOnes.add(8);
+                if (!board.isCategoryFill(7)) potentialOnes.add(7);
+                if (!board.isCategoryFill(6)) potentialOnes.add(6);
+            }
+            else {
+                if(targetValueTwoOfAKind!=-1){
+                    if ( !board.isCategoryFill(8)) potentialOnes.add(8); // full house possible
+                }
+            }
+
+
+            if (threeSequenceFound) {
+                if (!board.isCategoryFill(9)) potentialOnes.add(9);
+                if (!board.isCategoryFill(10)) potentialOnes.add(10);
+            }
+        }
+        else{
+            return board.availableToScoreCategories(); // for last roll, just send the available combinations
+        }
+        return potentialOnes;
+    }
+
 }
+
+
+
+

@@ -89,6 +89,7 @@ public class Tournament {
     public boolean loadTournament(BufferedReader fileReader) {
         int currentRound = 0;
 
+        initScorecard();
         try {
             String line;
 
@@ -198,6 +199,14 @@ public class Tournament {
             System.out.println("It's a tie!");
         }
         System.out.println("---------------------------");
+    }
+
+    public void initScorecard(){
+        for(int i=0;i<12;i++){
+            Scorecard.scoreCard.get(i).player_id = 0;
+            Scorecard.scoreCard.get(i).score = 0;
+            Scorecard.scoreCard.get(i).round_no = 0;
+        }
     }
 
     public void saveGame(BufferedWriter outFile) {

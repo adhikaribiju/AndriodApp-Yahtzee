@@ -91,6 +91,12 @@ public class Round {
         return computer.getReasoningMsg();
     }
 
+    public void resetRound(){
+        numOfRounds=0;
+        num_rolls=0;
+        NUM_OF_TURNS = 0;
+    }
+
 
 
 
