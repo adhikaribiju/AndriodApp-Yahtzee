@@ -38,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static Tournament tournament = new Tournament();
 
+
+    /**
+     * Will run after the MainActivity is called and will initialize the activity, including setting the content view, creating the buttons,
+     * and setting the OnClickListener for the buttons.
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,17 +102,13 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }
         });
-
-
-
-
-
-
-
     }
 
 
-
+    /**
+     * Fetches the file names from the Downloads directory.
+     * @return (List<String>) A list of file names in the Downloads directory.
+     */
     private List<String> getFilesFromDownloads() {
         List<String> fileNames = new ArrayList<>();
         File downloadsDir = new File(getFilesDir(), "Downloads");
@@ -125,6 +127,12 @@ public class MainActivity extends AppCompatActivity {
 
         return fileNames;
     }
+
+    /**
+     * Reads the content of the specified file from the Downloads directory.
+     * @param fileName (String) The name of the file to read.
+     * @return (String) The content of the file.
+     */
     private String readFileFromDownloads(String fileName) {
         File downloadsDir = new File(getFilesDir(), "Downloads");
         File file = new File(downloadsDir, fileName);
@@ -141,11 +149,5 @@ public class MainActivity extends AppCompatActivity {
 
         return fileContent.toString();
     }
-
-
-
-
-
-
 
 }

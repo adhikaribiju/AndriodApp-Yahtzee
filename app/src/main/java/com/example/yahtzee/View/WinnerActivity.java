@@ -12,6 +12,10 @@ import com.example.yahtzee.R;
 
 public class WinnerActivity extends AppCompatActivity {
 
+    /**
+     * Will run after the WinnerActivity is called and will initialize the activity, including setting the content view.
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

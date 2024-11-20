@@ -1,33 +1,36 @@
 package com.example.yahtzee.Model;
 import java.util.ArrayList;
-import java.util.Scanner;
+
 
 public class Round {
 
-    public static int numOfRounds = 1; // static variable to track the number of rounds
+    /**
+     * private data members
+     */
+    private static int numOfRounds = 1; // static variable to track the number of rounds
 
     private final int NUM_OF_DICE = 5; // constant for the number of dice
-    private int player_id;
-    private char player_choice;
-    private int num_rolls;
+
 
     private ArrayList<Integer> dice;
 
-    public static Integer NUM_OF_TURNS = 0;
+    private static Integer NUM_OF_TURNS = 0;
 
-    public Human human = new Human(); // Create a human player object
-    public Computer computer = new Computer(); // Create a computer player object
+    private Human human; // Create a human player object
+    private Computer computer; // Create a computer player object
 
     private Combinations scorecard = new Combinations();
 
+
+    /**
+     * Default constructor for the Round class.
+     */
     public Round() {
-        player_id = 0;
-        player_choice = ' ';
-        num_rolls = 1;
+        human = new Human();
+        computer = new Computer();
+
+
         dice = new ArrayList<>();
-
-
-
 
         // Initialize dice values to 0
         for (int i = 0; i < NUM_OF_DICE; i++) {
@@ -35,28 +38,44 @@ public class Round {
         }
     }
 
-    public void playRoundt(int player_id){
+    /**
+     * setters and getters
+     */
+    public Human getHuman() {
+        return human;
+    }
 
+    public Computer getComputer(){
+        return computer;
+    }
 
-       // human.playTurnt();
+    // Getter function to return the number of rounds played
+    public static int getRoundNo() {
+        return numOfRounds;
+    }
 
-        if (player_id == 1) {
-            NUM_OF_TURNS++;
-           // human.playTurn();
-        } else {
-            NUM_OF_TURNS++;
-           //computer.playTurn();
-        }
+    public static void setNumOfRounds(int round_no){
+        numOfRounds = round_no;
+    }
 
+    /**
+     * Method to play a round of the game.
+     */
+    public void playRoundt(){
+        NUM_OF_TURNS++;
     }
 
 
+    /**
+     * Method to find the next player to play.
+     * @param currentPlayerID The ID of the current player.
+     * @return The ID of the next player.
+     */
     public int findNextPlayer(int currentPlayerID){
 
         if (NUM_OF_TURNS % 2 == 0 ){
             // increase the round number
             // return the player_id with the lowest score
-            //
             numOfRounds++;
             return scorecard.playerWithLowestScore();
         }
@@ -65,7 +84,13 @@ public class Round {
         }
     }
 
-    // Need to add numOfReRolls and KeptDice Array
+    /**
+     * Method to play a turn in the game.
+     * @param player_id (int) The ID of the player.
+     * @param dice (ArrayList<Integer>) The list of dice values.
+     * @param category_choice (int) The category chosen by the player.
+     * @return The score of the player.
+     */
     public int playTurn(int player_id, ArrayList<Integer> dice, int category_choice)
     {
         human.playTurn(player_id, dice, category_choice);
@@ -73,107 +98,38 @@ public class Round {
     }
 
 
-
+    /**
+     * Method to play a turn for the computer player.
+     * @param player_id (int) The ID of the player.
+     * @param dice (ArrayList<Integer>) The list of dice values.
+     * @param rollCount (int) The number of rolls.
+     * @param keptDiceInd (ArrayList<Integer>) The indices of the dice kept by the player.
+     * @return The score of the player.
+     */
     public int playTurnComputer(int player_id, ArrayList<Integer> dice, int rollCount,ArrayList<Integer>  keptDiceInd){
 
         // based on the dice combination, find out the available combinations
         // if there are available combinations, find out the highest one, score it and return the category number
         // if not, return -1
 
-        return computer.playTurnt(player_id, dice,rollCount,keptDiceInd);
-
-        //human.playTurn(player_id, dice,11);
-
+        return computer.playTurn(player_id, dice,rollCount,keptDiceInd);
 
     }
 
+    /**
+     * Method to get the score of the human player.
+     * @return The score of the human player.
+     */
     public String getReasoning(){
         return computer.getReasoningMsg();
     }
 
+    /**
+     * Method to reset the round.
+     */
     public void resetRound(){
         numOfRounds=0;
-        num_rolls=0;
         NUM_OF_TURNS = 0;
     }
 
-
-
-
-    // Starts a round consisting of two turns
-    public void playRound(int player_id) {
-        Human human = new Human(); // Create a human player object
-        Computer computer = new Computer(); // Create a computer player object
-
-        //System.out.println("\nRound " + numOfRounds);
-
-        if (player_id == 1) {
-            human.playTurn();
-            computer.playTurn();
-        } else {
-            computer.playTurn();
-            human.playTurn();
-        }
-
-//        if (isSaveGame()) {
-//            Serialization serialize = new Serialization();
-//            if (serialize.saveGame()) {
-//                System.out.println("Game saved!");
-//                System.exit(0); // Exit the program
-//            }
-//        }
-
-       // numOfRounds++;
-    }
-
-    // Resumes a round consisting of two turns
-
-
-    // Finds the index of the dice to keep
-    public int diceIndex(int dice_to_keep) {
-        for (int i = 0; i < NUM_OF_DICE; i++) {
-            if (dice.get(i) == dice_to_keep) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // Displays the dice values
-    public void displayDice() {
-        for (int i = 0; i < NUM_OF_DICE; i++) {
-            System.out.println("Dice " + (i + 1) + ": " + dice.get(i));
-        }
-        System.out.println();
-    }
-
-    // Getter function to return the number of rounds played
-    public int getRoundNo() {
-        return numOfRounds;
-    }
-
-    // Checks if the user wants to save the game
-    public boolean isSaveGame() {
-        Scanner scanner = new Scanner(System.in);
-        String save_game;
-
-        // Loop until a valid response is provided
-        while (true) {
-            System.out.print("Do you wish to save the game? (Y/N): ");
-            save_game = scanner.nextLine().trim();
-
-            if (save_game.length() == 1) {
-                char answer = Character.toLowerCase(save_game.charAt(0));
-
-                if (answer == 'y') {
-                    System.out.println("Saving now...");
-                    return true;
-                } else if (answer == 'n') {
-                    return false;
-                }
-            }
-
-            System.out.println("Invalid input. Please enter Y/N only.");
-        }
-    }
 }

@@ -9,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +38,11 @@ public class TurnDecideActivity extends AppCompatActivity {
             R.drawable.dice6
     };
 
+    /**
+     * Will run after the TurnDecideActivity is called and will initialize the activity, including setting the content view, creating the buttons,
+     * and setting the OnClickListener for the buttons.
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +89,9 @@ public class TurnDecideActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Rolls the dices for both computer and human, and determines the winner.
+     */
     private void rollDices() {
         // Generate random rolls for both computer and human (1 to 6)
         int computerRoll = random.nextInt(6) + 1; // Random number from 1 to 6
@@ -110,6 +117,9 @@ public class TurnDecideActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Allows the user to manually set the dice values for both computer and human, and determines the winner.
+     */
     private void manualRoll() {
         // Create a dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -173,13 +183,6 @@ public class TurnDecideActivity extends AppCompatActivity {
                 computerScore[0] = (int) selectedComputerButton.getTag();
             }
 
-            // Use the selected values
-            //Log.d("ManualRoll", "Human Score: " + humanScore[0]);
-            //Log.d("ManualRoll", "Computer Score: " + computerScore[0]);
-
-            // Optionally display a toast with the selected values
-            //Toast.makeText(this, "Human: " + humanScore[0] + ", Computer: " + computerScore[0], Toast.LENGTH_SHORT).show();
-            // Update computer's dice ImageView based on the roll
             computerDice.setImageResource(diceImages[computerScore[0] - 1]);
 
             // Update human's dice ImageView based on the roll
@@ -210,6 +213,10 @@ public class TurnDecideActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Displays the winner of the dice roll.
+     * @param winner The name of the winner.
+     */
     private void displayWinner(String winner) {
 
         drawText.setVisibility(View.INVISIBLE);
@@ -228,6 +235,9 @@ public class TurnDecideActivity extends AppCompatActivity {
         startTournamentButton.setTag(winner); // Store the winner name in the button tag
     }
 
+    /**
+     * Starts the PlayRoundActivity with the winner's name.
+     */
     private void startPlayRoundActivity() {
         // Retrieve the winner name from the button tag
         String winner = (String) startTournamentButton.getTag();

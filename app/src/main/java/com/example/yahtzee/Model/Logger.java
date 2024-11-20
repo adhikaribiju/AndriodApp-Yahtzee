@@ -14,9 +14,9 @@ public class Logger {
 
 
     /**
-     * Gets the singleton instance of the Logger class.
-     * @return The singleton instance of the Logger class.
-     * Help from: https://www.geeksforgeeks.org/singleton-class-java/#
+     * Singleton class to ensure only one instance of Logger is created.
+     * @return The Logger instance.
+     * Assistance: https://www.geeksforgeeks.org/singleton-class-java/#
      */
     public static Logger getInstance() {
         if (instance == null) {
@@ -30,21 +30,27 @@ public class Logger {
     }
 
     /**
+     * Gets the log buffer as a string.
+     * @return The log buffer as a string.
+     */
+    public String getLog() {
+        return logBuffer.toString();
+    }
+
+
+    /**
      * Logs a message with a timestamp.
-     * @param message The message to be logged.
+     * @param message The message to log in string format.
      */
     public void log(String message) {
         String formattedMessage = getCurrentTimestamp() + ": " + message;
         logBuffer.append(formattedMessage).append("\n\n");
     }
 
-    public String getLog() {
-        return logBuffer.toString();
-    }
 
     /**
-     * Gets the current timestamp formatted as "yyyy-MM-dd HH:mm:ss".
-     * @return The formatted current timestamp.
+     * Gets the current timestamp.
+     * @return The current timestamp in string format.
      */
     private String getCurrentTimestamp() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());

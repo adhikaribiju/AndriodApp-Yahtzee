@@ -1,11 +1,13 @@
 package com.example.yahtzee.Model;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+
 
 public abstract class Player {
 
-    protected final int MAX_ROLLS = 3;    // Maximum number of rolls allowed
+    /**
+     * protected data members
+     */
+
     protected final int DICE_COUNT = 5;   // Number of dice in the game
 
     protected int player_id;              // 1 for human, 2 for computer
@@ -15,7 +17,9 @@ public abstract class Player {
     protected ArrayList<Integer> dice;    // List to store dice values
     protected ArrayList<Integer> combinations; // List to store available unsocred categories as per dice
 
-    // Default constructor
+    /**
+     * Default constructor
+     */
     public Player() {
         player_id = 0;
         num_rolls = 1;
@@ -28,64 +32,25 @@ public abstract class Player {
         }
     }
 
-    // Parameterized constructor
+    /**
+     * Constructor with player id
+     */
     public Player(int p_id) {
         this();
         player_id = p_id;
     }
 
-    // Abstract method to play a turn, to be implemented by subclasses
-    public abstract void playTurn();
 
-    // Rolls the dice, either manually or randomly
-    public void playRoll() {
-        Random rand = new Random();
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Do you wish to manually input all dices? (Y/N)");
-        String choice = scanner.nextLine().trim();
+    /**
+     * Abstract method to play a turn, to be implemented by subclasses
+     * @param player_id (int) The player id
+     * @param dice (int) The dice values
+     * @param rollCount (int) The number of rolls
+     * @param keptDiceInd (int) The indices of the dice kept
+     * @return The category chosen by the player
+     */
+    public abstract int playTurn(int player_id, ArrayList<Integer> dice, int rollCount, ArrayList<Integer> keptDiceInd);
 
-        if (choice.equalsIgnoreCase("Y")) {
-            // Manually enter dice values
-            for (int i = 0; i < DICE_COUNT; i++) {
-                int value;
-                do {
-                    System.out.print("Enter the value for dice " + (i + 1) + ": ");
-                    value = scanner.nextInt();
-                    if (value < 1 || value > 6) {
-                        System.out.println("Invalid entry! Enter values from 1-6.");
-                    }
-                } while (value < 1 || value > 6);
-                dice.set(i, value);
-            }
-        } else if (choice.equalsIgnoreCase("N")) {
-            // Generate random dice values
-            System.out.println("Rolling the dice randomly...");
-            for (int i = 0; i < DICE_COUNT; i++) {
-                dice.set(i, rand.nextInt(6) + 1);
-            }
-        } else {
-            System.out.println("Invalid entry! Enter Y or N.");
-        }
-    }
 
-    // Displays the dice values
-    public void displayDice() {
-        System.out.print("Dice: ");
-        for (int value : dice) {
-            System.out.print(value + " ");
-        }
-        System.out.println();
-    }
-
-    // Finds the indices of dice to keep based on a given value
-    public ArrayList<Integer> diceIndex(int dice_to_reroll) {
-        ArrayList<Integer> recordIndices = new ArrayList<>();
-        for (int i = 0; i < DICE_COUNT; i++) {
-            if (dice.get(i) == dice_to_reroll) {
-                recordIndices.add(i);
-            }
-        }
-        return recordIndices;
-    }
 }

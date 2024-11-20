@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Yahtzee</string>
+    <string name="no_rolls_left">No Rolls Left</string>
+    <string name="_3_rolls_left">3 Rolls Left</string>
+    <string name="_2_rolls_left">2 Rolls Left</string>
+    <string name="_1_roll_left">1 Roll Left</string>
+    <string name="no_rolls_leftt">No Rolls Left</string>
+    <string name="score">Score</string>
+    <string name="available">Available</string>
 </resources>

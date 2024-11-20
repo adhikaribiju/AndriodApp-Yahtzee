@@ -1,17 +1,14 @@
 package com.example.yahtzee.View;
-import android.content.res.AssetManager;
+
+import static java.lang.String.*;
+
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-
-
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,26 +17,20 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.yahtzee.Model.Combinations;
 import com.example.yahtzee.Model.Logger;
-import com.example.yahtzee.Model.Scorecard;
+import com.example.yahtzee.Model.Round;
 import com.example.yahtzee.Model.Tournament;
 import com.example.yahtzee.R;
 import com.google.android.material.button.MaterialButton;
-
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -50,20 +41,15 @@ import java.util.Random;
 public class PlayRoundActivity extends AppCompatActivity {
 
     public Combinations combinations;
-
     private Button rollButton;
-    private Button manRoll;
-    private Random random = new Random(); // Initialize Random
 
     private ImageView[] diceViews;
     private int rollsCount = 0;
-
     private static final int HUMAN = 1;     // ID for the human player
     private static final int COMPUTER = 2;  // ID for the computer player
-
     private boolean manualChoice = false;
-
-    private Logger logger = Logger.getInstance();
+    private final Random random = new Random();
+    private final Logger logger = Logger.getInstance();
 
 
     // Array of drawable resource IDs for the dice images
@@ -79,30 +65,30 @@ public class PlayRoundActivity extends AppCompatActivity {
     private ArrayList<Integer> Currentdice = new ArrayList<>(5); // Initialize dice array
 
     private ArrayList<Integer> availableCombinations;
-    private ArrayList<Integer> unfilledCategories;
+
 
     private boolean[] isSelected = new boolean[5]; // Track selected dice
-    private boolean[] isKept = new boolean[5]; // Track dice kept at 2nd roll
-    private ArrayList<Integer> selectedDiceInd = new ArrayList<>(); // Store selected dice index
-    private ArrayList<Integer> selectedDice = new ArrayList<>(); // Store selected dice index
+    private final boolean[] isKept = new boolean[5]; // Track dice kept at 2nd roll
+    private final ArrayList<Integer> selectedDiceInd = new ArrayList<>(); // Store selected dice index
+    private int compRollCount = 0;
 
     MaterialButton manualRollButton;
-
-    private int compRollCount = 0;
 
     ArrayList<Integer> KeptDiceInd = new ArrayList<>();
 
 
-    public interface DiceEntryCallback {
-        void onDiceEntered(ArrayList<Integer> diceValues);
-    }
-
+    /**
+     * Callback interface for manual dice input
+     */
     public interface ManualDiceCallback {
         void onDiceValuesSet(ArrayList<Integer> diceValues);
     }
 
 
-
+    /** 
+     * This method is called when the activity is first created. It initializes the activity, including setting the content view,
+     * @param savedInstanceState The saved instance state of the activity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +102,6 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
         rollButton = findViewById(R.id.rollButton);
-        //manRoll = findViewById(R.id.Manuallroll);
 
 
         diceViews = new ImageView[]{
@@ -185,7 +170,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             TextView winnerTextView = findViewById(R.id.playerTurnText);
 
             // Display a message indicating which player won the toss
-            winnerTextView.setText(winnerName + "'s Turn");
+            winnerTextView.setText(format("%s's Turn", winnerName));
 
             assert winnerName != null;
             if (winnerName.equals("Human")) {
@@ -222,39 +207,9 @@ public class PlayRoundActivity extends AppCompatActivity {
             });
         }
 
-        handleHumanTurn();
+        handleGameTurn();
 
 
-//        if (Tournament.currentPlayerId == COMPUTER) {
-//            computerPlay(KeptDiceInd);
-//        } else {
-//            handleHumanTurn();
-//        }
-
-        // *** MANUAL ROLL WALA****
-        // Set the button click listener
-//        manRoll.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                rollsCount++;
-//                updateRollsLeftText(rollsCount);
-//                askDiceEntry(PlayRoundActivity.this, diceValues -> {
-//                    // Now `diceValues` contains the validated user input
-//                    rollDices(diceValues);  // Pass the values to rollDices
-//                    // Keep track of the number of dice rolls here if needed
-//                });
-//
-//                if (rollsCount > 3) {
-//                    rollsCount = 0; //reset
-//                    playNextTurn();
-//                }
-//
-//                //rollDices(askDiceEntry(PlayRoundActivity.this));
-//                // need to keep track of the number of dice rolls
-//                //
-//            }
-//        });
 
         ImageView saveGameButton = findViewById(R.id.saveGameButton);
         saveGameButton.setOnClickListener(new View.OnClickListener() {
@@ -306,16 +261,16 @@ public class PlayRoundActivity extends AppCompatActivity {
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Call playTurnt to get the categoryReceived value
 
-                ArrayList<Integer> selectedDiceInds = new ArrayList<Integer>();
+
+                ArrayList<Integer> selectedDiceInds = new ArrayList<>();
                 for (int i = 0; i < diceViews.length; i++) {
                     if (isSelected[i]) {
                         selectedDiceInds.add(i); // Add the dice index (0-5)
                     }
                 }
 
-                int categoryReceived = MainActivity.tournament.round.human.playTurnt(HUMAN, Currentdice, rollsCount, selectedDiceInds);
+                int categoryReceived = MainActivity.tournament.getRound().getHuman().playTurn(HUMAN, Currentdice, rollsCount, selectedDiceInds);
 
                 // Create the dialog box
                 AlertDialog.Builder builder = new AlertDialog.Builder(PlayRoundActivity.this);
@@ -337,20 +292,20 @@ public class PlayRoundActivity extends AppCompatActivity {
 
                     if (selectedDiceInds.isEmpty()) {
                         messageBuilder.setLength(0); // Clears the existing content
-                        messageBuilder.append("You may reroll all dices:");
+                        messageBuilder.append("You may re-roll all dices:");
                     }
                     else {
                         // Append the reasoning message
-                        messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
+                        messageBuilder.append("\n\n").append(MainActivity.tournament.getRound().getHuman().getReasoning());
                     }
                 } else {
                     messageBuilder.append("You may score at Category: ").append(combinations.getCategoryName(categoryReceived));
-                    messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
+                    messageBuilder.append("\n\n").append(MainActivity.tournament.getRound().getHuman().getReasoning());
                 }
 
 
 
-                logger.log("Computer suggested: "+ messageBuilder.toString());
+                logger.log("Computer suggested: "+ messageBuilder);
 
                 // Set the message in the dialog
                 builder.setMessage(messageBuilder.toString());
@@ -383,7 +338,10 @@ public class PlayRoundActivity extends AppCompatActivity {
 
     }
 
-    public void handleHumanTurn() {
+    /**
+     * This method handles the game turn for both the human and computer players. It sets up the button click listener for the rollButton and handles the view logic.
+     s*/
+    public void handleGameTurn() {
 
         // Set the button click listener
         rollButton.setOnClickListener(new View.OnClickListener() {
@@ -391,7 +349,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             public void onClick(View v) {
                 unhighlightBoard();
 
-                if (Tournament.currentPlayerId == COMPUTER) {
+                if (MainActivity.tournament.getCurrentPlayerId() == COMPUTER) {
 
 
 
@@ -399,39 +357,22 @@ public class PlayRoundActivity extends AppCompatActivity {
                         manualInputDialog(KeptDiceInd, newDice -> {
                             // Roll dice with manually entered values
                             Currentdice = new ArrayList<>(newDice);
-                            logger.log("Computer rolled\n" + Currentdice.toString());
+                            logger.log("Computer rolled\n" + Currentdice);
                             computerRoll();
                         });
                     }
                     else{
                         ArrayList<Integer> dice = generateDice(KeptDiceInd); // Important ** DO NOT MESS //
-                        logger.log("Computer rolled\n" + dice.toString());
+                        logger.log("Computer rolled\n" + dice);
                         computerRoll();
                     }
 
                     return;
-//                    compRollCount++;
-//                    updateRollsLeftText(compRollCount);
-//                    if (compRollCount == 1) computerPlay(KeptDiceInd);
-//                    if (compRollCount == 2) computerSecondRoll(KeptDiceInd);
-//                    if (compRollCount == 3) {
-//                        computerThirdRoll(KeptDiceInd);
-//                        compRollCount = 0; //reset
-//                        KeptDiceInd.clear();
-//                    }
-//                    updatePlayScores();
-//                    return;
-
-
-
                 }
 
                 compRollCount = 0; //reset
                 KeptDiceInd.clear();
 
-
-                // Clear previously selected dice values
-                //selectedDiceInd.clear();
 
                 // Collect values of selected dice
                 for (int i = 0; i < diceViews.length; i++) {
@@ -448,7 +389,7 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
 
-                // select vayesi unselect mildaina
+                // Can't be unselected if selected before
                 if (rollsCount < 3) {
                     rollsCount++;
                     updateRollsLeftText(rollsCount);
@@ -468,14 +409,14 @@ public class PlayRoundActivity extends AppCompatActivity {
                     for (int index : humanKeptDices) {
                         messageBuilder.append(Currentdice.get(index)).append(" ");
                     }
-                    logger.log("Human kept dices: \n" +messageBuilder.toString());
+                    logger.log("Human kept dices: \n" + messageBuilder);
                 }
 
                 if(manualChoice){
                     manualInputDialog(selectedDiceInd, newDice -> {
                         // Roll dice with manually entered values
                         Currentdice = new ArrayList<>(newDice);
-                        logger.log("Human rolled\n "+ Currentdice.toString());
+                        logger.log("Human rolled\n "+ Currentdice);
                         rollDices(newDice); // Call rollDices with the manually generated dice
                     });
                 }
@@ -526,6 +467,9 @@ public class PlayRoundActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method highlights the score, player, and round boxes on the scorecard that are available for scoring.
+     */
     public void highlightBoard(){
         // Loop through all the available combinations
 
@@ -543,7 +487,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             TextView scoreTextView = findViewById(scoreResID);
             if (scoreTextView != null) {
                 scoreTextView.setBackgroundColor(highlightColor);
-                scoreTextView.setText(String.valueOf(combinations.getScore(categoryIndex)));
+                scoreTextView.setText(valueOf(combinations.getScore(categoryIndex)));
             }
 
             // Highlight player box
@@ -552,7 +496,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             TextView playerTextView = findViewById(playerResID);
             if (playerTextView != null) {
                 playerTextView.setBackgroundColor(highlightColor);
-               playerTextView.setText(String.valueOf(Tournament.currentPlayerId));
+               playerTextView.setText(valueOf(MainActivity.tournament.getCurrentPlayerId()));
             }
 
             // Highlight round box
@@ -561,13 +505,16 @@ public class PlayRoundActivity extends AppCompatActivity {
             TextView roundTextView = findViewById(roundResID);
             if (roundTextView != null) {
                 roundTextView.setBackgroundColor(highlightColor);
-                roundTextView.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+                roundTextView.setText(valueOf(Round.getRoundNo()));
             }
         }
 
     }
 
 
+    /**
+     * This method unhighlights the score, player, and round boxes on the scorecard that are available for scoring.
+     */
     public void unhighlightBoard() {
 
         int highlightColor = Color.parseColor("#EBEAEF"); // Highlight color
@@ -623,54 +570,11 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
 
-    public void askDiceEntry(Context context, DiceEntryCallback callback) {
-        ArrayList<Integer> diceValues = new ArrayList<>();
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Enter Dice Values (1-6)");
-
-        // Create an input field for each dice entry
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        ArrayList<EditText> inputs = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            input.setHint("Dice " + (i + 1));
-            layout.addView(input);
-            inputs.add(input);
-        }
-
-        builder.setView(layout);
-
-        // Set up the buttons
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            // Validate and collect dice values
-            for (EditText input : inputs) {
-                String text = input.getText().toString().trim();
-                if (!text.isEmpty()) {
-                    int value = Integer.parseInt(text);
-                    if (value >= 1 && value <= 6) {
-                        diceValues.add(value);
-                    } else {
-                        //*Toast.makeText(context, "Please enter values between 1 and 6.", Toast.LENGTH_SHORT).show();
-                        diceValues.clear();
-                        break;
-                    }
-                }
-            }
-
-            // Trigger the callback with the collected dice values
-            callback.onDiceEntered(diceValues);
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        // Show the dialog
-        builder.show();
-    }
-
-
+    /**
+     * This method generates 5 random dice rolls, keeping the dice values that are selected by the user.
+     * @param keptDicesInd The indices of the dice values to keep.
+     @return The new dice values after generating random rolls and keeping the selected dice values.
+     */
     private ArrayList<Integer> generateDice(ArrayList<Integer> keptDicesInd) {
         // Generate 5 random dice rolls
 
@@ -697,12 +601,12 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
 
-
+    /**
+     * This method rolls the dice and displays the dice images on the screen. It also highlights the available categories for scoring.
+     * @param dice The dice values to display.
+     */
     private void rollDices(ArrayList<Integer> dice) {
 
-        //updatePlayScores();
-
-        int numRolls = 1; // to track the number of rolls
 
         initBoard();
 
@@ -722,7 +626,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             combinationsText.append(combination + 1).append("\n");
         }
 
-        ArrayList<Integer> potentialCategories = new ArrayList<Integer>(MainActivity.tournament.round.human.potentialCategories(Currentdice,rollsCount));
+        ArrayList<Integer> potentialCategories = new ArrayList<>(MainActivity.tournament.getRound().getHuman().potentialCategories(Currentdice,rollsCount));
 
 
         // Loop through each available combination and apply the border to corresponding TextViews
@@ -786,23 +690,23 @@ public class PlayRoundActivity extends AppCompatActivity {
 
                     if (textScore != null) {
                         // Set the textScore to display the score
-                        textScore.setText(String.valueOf(score));
+                        textScore.setText(valueOf(score));
 
-                        //playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
-                        playerScoredText.setText(String.valueOf(HUMAN));
 
-                        roundNoText.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+                        playerScoredText.setText(valueOf(HUMAN));
+
+                        roundNoText.setText(valueOf(Round.getRoundNo()));
 
                         // update the scorecard.....
 
-                        MainActivity.tournament.round.playTurn(HUMAN, dice, categoryNumber + 1);
+                        MainActivity.tournament.getRound().playTurn(HUMAN, dice, categoryNumber + 1);
 
-                        logger.log("Human scored "+ String.valueOf(score) + " on "+ combinations.getCategoryName(categoryNumber));
+                        logger.log("Human scored "+ score + " on "+ combinations.getCategoryName(categoryNumber));
 
                         rollsCount = 0; //reset
 
                         TextView rollLeftText = findViewById(R.id.rollLeftText);
-                        rollLeftText.setText("No Rolls Left");
+                        rollLeftText.setText(R.string.no_rolls_left);
 
                         handleGameEnd(); // check if scorecard filled
 
@@ -815,19 +719,23 @@ public class PlayRoundActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method plays the next turn in the game, updating the round number and the current player.
+     * It also resets the dice borders and updates the player scores.
+     */
     public void playNextTurn() {
 
         handleGameEnd();
         ImageView helpButton = findViewById(R.id.helpButton);
 
-        String playerName = (Tournament.currentPlayerId  == 1) ? "Human" : "Computer";
+        String playerName = (MainActivity.tournament.getCurrentPlayerId()  == 1) ? "Human" : "Computer";
 
         logger.log(playerName + "'s Turn Ended!");
 
         initBoard();
         // find out who plays next, accordingly update the round number and turn's field
-        MainActivity.tournament.round.playRoundt(Tournament.currentPlayerId);
-        Tournament.currentPlayerId = (MainActivity.tournament.round.findNextPlayer(Tournament.currentPlayerId));
+        MainActivity.tournament.getRound().playRoundt();
+        MainActivity.tournament.setCurrentPlayerId(MainActivity.tournament.getRound().findNextPlayer(MainActivity.tournament.getCurrentPlayerId()));
 
         // by this point, i should have new round num or new player: update those
         updateUIPlayerRoundNo();
@@ -836,32 +744,40 @@ public class PlayRoundActivity extends AppCompatActivity {
         initDiceBorders();
         updatePlayScores();
 
-        if (Tournament.currentPlayerId == 1) helpButton.setVisibility(View.INVISIBLE);
-        if (Tournament.currentPlayerId == 2) helpButton.setVisibility(View.INVISIBLE);
+        helpButton.setVisibility(View.INVISIBLE);
 
-        playerName = (Tournament.currentPlayerId  == 1) ? "Human" : "Computer";
+
+        playerName = (MainActivity.tournament.getCurrentPlayerId()  == 1) ? "Human" : "Computer";
         logger.log(playerName+ "'s Turn Started!");
 
 
     }
 
+
+    /**
+     * This method updates the player and round number displayed on the screen.
+     * It sets the text of the playerTurnText and roundNumberText TextViews to the current player and round number, respectively.
+     */
     public void updateUIPlayerRoundNo() {
 
         TextView winnerTextView = findViewById(R.id.playerTurnText);
 
-        String player = (Tournament.currentPlayerId == 1) ? "Human" : "Computer";
+        String player = (MainActivity.tournament.getCurrentPlayerId() == 1) ? "Human" : "Computer";
 
         // Display a message indicating which player won the toss
-        winnerTextView.setText(player + "'s Turn");
+        winnerTextView.setText(format("%s's Turn", player));
 
 
         TextView RoundNo = findViewById(R.id.roundNumberText);
 
         // Display a message indicating which player won the toss
-        RoundNo.setText("Round No: " + MainActivity.tournament.round.getRoundNo());
+        RoundNo.setText(format("Round No: %d", Round.getRoundNo()));
     }
 
 
+    /**
+     * This method initializes the scorecard board by resetting the background of the categories and hiding the score buttons.
+     */
     public void initBoard() {
         // Unhighlight
         for (int i = 1; i <= 12; i++) { // Replace 12 with the actual number of categories
@@ -883,14 +799,16 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.INVISIBLE); // Set all buttons to invisible initially
-                scoreButton.setText("Score");       // Set text to "Available"
-                scoreButton.setClickable(true);        // Make the button unclickable
+                scoreButton.setText(R.string.score);       // Set text to "Available"
+                scoreButton.setClickable(true);        // Make the button not clickable
             }
         }
 
     }
 
-
+    /**
+     * This method checks if the scorecard is full and displays a dialog with the winner information.
+     */
     public void handleGameEnd() {
         if (combinations.isScorecardFull()) {
             // Determine the winner (assuming you have a way to get scores for Human and Computer)
@@ -913,7 +831,7 @@ public class PlayRoundActivity extends AppCompatActivity {
                     .setMessage(winnerMessage)
                     .setPositiveButton("OK", (dialog, which) -> {
                         // Reset Tournament and redirect to MainActivity
-                        MainActivity.tournament.round.resetRound();
+                        MainActivity.tournament.getRound().resetRound();
                         MainActivity.tournament = new Tournament(); // Reset the tournament instance
 
                         // Reset the scorecard
@@ -928,6 +846,9 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method resets the dice borders to the default border and resets the selected and kept states of the dice.
+     */
     private void initDiceBorders() {
         for (int i = 0; i < diceViews.length; i++) {
             diceViews[i].setBackgroundResource(R.drawable.default_border); // Reset border to default
@@ -938,7 +859,10 @@ public class PlayRoundActivity extends AppCompatActivity {
         updateRollsLeftText(rollsCount);
     }
 
-
+    /**
+     * This method updates the rolls left of player per turn
+     * @param rollsCount The number of rolls left for the player.
+     */
     private void updateRollsLeftText(int rollsCount) {
         // Reference to the TextView
         TextView rollLeftText = findViewById(R.id.rollLeftText);
@@ -946,43 +870,25 @@ public class PlayRoundActivity extends AppCompatActivity {
         // Update text based on rollsCount
         switch (rollsCount) {
             case 0:
-                rollLeftText.setText("3 Rolls Left");
+                rollLeftText.setText(R.string._3_rolls_left);
                 break;
             case 1:
-                rollLeftText.setText("2 Rolls Left");
+                rollLeftText.setText(R.string._2_rolls_left);
                 break;
             case 2:
-                rollLeftText.setText("1 Roll Left");
+                rollLeftText.setText(R.string._1_roll_left);
                 break;
             default:
-                rollLeftText.setText("No Rolls Left");
+                rollLeftText.setText(R.string.no_rolls_leftt);
                 break;
         }
     }
 
-
-
-
-
-
-
-
+    /**
+     * This method initializes the computer's turn logic, including rolling the dice and scoring.
+     * @param keptDiceInd (ArrayList<Integer>) The dice values that the computer has decided to keep.
+     */
     public void computerPlay(ArrayList<Integer> keptDiceInd) {
-
-        //Combinations combinations = new Combinations();
-        // Make Help and Save Game Buttons Invisible
-
-        //ArrayList<Integer> keptDiceInd = new ArrayList<>();
-
-
-
-        ImageView saveGameButton = findViewById(R.id.saveGameButton);
-        ImageView helpButton = findViewById(R.id.helpButton);
-
-       // helpButton.setVisibility(View.INVISIBLE);
-
-        // Roll the dice
-        //ArrayList<Integer> diceVals = generateDice(new ArrayList<>());
 
 
         combinations.updateDice(Currentdice);
@@ -1001,8 +907,8 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-                scoreButton.setText("Available");       // Set text to "Available"
-                scoreButton.setClickable(false);        // Make the button unclickable
+                scoreButton.setText(R.string.available);       // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button not clickable
             }
         }
         highlightBoard();
@@ -1030,7 +936,7 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
 
-                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());}
+                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.getRound().getReasoning());}
 
                 logger.log(messageBuilder.toString());
 
@@ -1039,35 +945,32 @@ public class PlayRoundActivity extends AppCompatActivity {
                         .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
                         .setPositiveButton("OK", (dialog, which) -> {
                             dialog.dismiss(); // Dismiss the dialog
-                            //computerSecondRoll(keptDiceInd);
-
 
                         })
                         .setCancelable(false) // Prevent dismissing the dialog without clicking OK
                         .show();
             }
 
-            // Make the buttons visible again after scoring
-            //saveGameButton.setVisibility(View.VISIBLE);
-            //helpButton.setVisibility(View.VISIBLE);
         }, 1000); // 1-second delay
 
-        //saveGameButton.setVisibility(View.VISIBLE);
-        //  helpButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * This method initializes the computer's first roll logic, including rolling the dice and scoring.
+     * @param diceVals (ArrayList<Integer>) The dice values to roll.
+     * @param keptDiceInd (ArrayList<Integer>) The dice values that the computer has decided to keep.
+     */
     public boolean computerFirstRoll(ArrayList<Integer> diceVals, ArrayList<Integer> keptDiceInd) {
         // Keep dice indices (if any logic applies)
         //ArrayList<Integer> keptDiceInd = new ArrayList<>();
         displayPotentialComputer(0);
 
-        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, diceVals, 0, keptDiceInd);
+        int categoryReceived = MainActivity.tournament.getRound().playTurnComputer(COMPUTER, diceVals, 0, keptDiceInd);
         if (categoryReceived == -1) {
             return false;
         } else {
             // Show a dialog before updating the scorecard
 
-            String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
 
             logger.log("Computer decided to score in "+ combinations.getCategoryName(categoryReceived));
             new AlertDialog.Builder(this)
@@ -1084,6 +987,10 @@ public class PlayRoundActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * This method updates the player scores displayed on the screen.
+     * @param categoryReceived (int) The category number that the player has scored in.
+     */
     private void updateScorecardUI(int categoryReceived) {
         // Update the scorecard UI
         String textId = "score" + (categoryReceived + 1);
@@ -1100,31 +1007,30 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
         int score = combinations.getScore(categoryReceived);
-        textScore.setText(String.valueOf(score));
+        textScore.setText(valueOf(score));
 
-        playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
+        playerScoredText.setText(valueOf(MainActivity.tournament.getCurrentPlayerId()));
 
-        roundNoText.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
+        roundNoText.setText(valueOf(MainActivity.tournament.getRound().getRoundNo()));
 
 
         // Call the next turn logic
         playNextTurn();
     }
 
+    /**
+     * This method initializes the computer's second roll logic, including rolling the dice and scoring.
+     * @param keptDiceInd (ArrayList<Integer>) The dice values that the computer has decided to keep.
+     */
     public void computerSecondRoll(ArrayList<Integer> keptDiceInd) {
 
         initBoard();
         displayPotentialComputer(1);
 
-        ArrayList<Integer> previousKeptDiceInd = new ArrayList<>(keptDiceInd);
-        //keptDiceInd.clear();
-
 
         ImageView saveGameButton = findViewById(R.id.saveGameButton);
-        ImageView helpButton = findViewById(R.id.helpButton);
 
         // Roll the dice
-        //ArrayList<Integer> diceVals = generateDice(previousKeptDiceInd);
         combinations.updateDice(Currentdice);
         availableCombinations = combinations.availableToScoreCategories();
 
@@ -1141,14 +1047,14 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-                scoreButton.setText("Available");       // Set text to "Available"
-                scoreButton.setClickable(false);        // Make the button unclickable
+                scoreButton.setText(R.string.available);        // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button not clickable
             }
         }
         highlightBoard();
 
 
-        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, Currentdice, 1, keptDiceInd);
+        int categoryReceived = MainActivity.tournament.getRound().playTurnComputer(COMPUTER, Currentdice, 1, keptDiceInd);
 
         // check for kept error
 
@@ -1175,7 +1081,7 @@ public class PlayRoundActivity extends AppCompatActivity {
 
 
 
-                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.round.getReasoning());}
+                if (!keptDiceInd.isEmpty()) {messageBuilder.append("\n\n").append(MainActivity.tournament.getRound().getReasoning());}
 
                 logger.log(messageBuilder.toString());
                 new AlertDialog.Builder(this) // Replace with your activity's context
@@ -1183,16 +1089,12 @@ public class PlayRoundActivity extends AppCompatActivity {
                         .setMessage(messageBuilder.toString().trim()) // Display the dynamic message
                         .setPositiveButton("OK", (dialog, which) -> {
                             dialog.dismiss(); // Dismiss the dialog
-                            //computerThirdRoll(keptDiceInd);
 
-                            //playNextTurn();   // Call the next turn logic
                         })
                         .setCancelable(false) // Prevent dismissing the dialog without clicking OK
                         .show();
             } else {
                 // Show a dialog before updating the scorecard
-
-                String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
 
                 logger.log("Computer decided to score in "+ combinations.getCategoryName(categoryReceived));
                 new AlertDialog.Builder(this)
@@ -1210,21 +1112,21 @@ public class PlayRoundActivity extends AppCompatActivity {
 
             // Make the buttons visible again after scoring
             saveGameButton.setVisibility(View.VISIBLE);
-            //helpButton.setVisibility(View.VISIBLE);
         }, 1000); // 1-second delay
 
     }
 
-
+    /**
+     * This method initializes the computer's third roll logic, including rolling the dice and scoring.
+     * @param keptDiceInd (ArrayList<Integer>) The dice values that the computer has decided to keep.
+     */
     public void computerThirdRoll(ArrayList<Integer> keptDiceInd) {
 
         initBoard();
         displayPotentialComputer(2);
 
-        ImageView saveGameButton = findViewById(R.id.saveGameButton);
-        ImageView helpButton = findViewById(R.id.helpButton);
+
         // Roll the dice
-        //ArrayList<Integer> diceVals = generateDice(keptDiceInd);
         combinations.updateDice(Currentdice);
         availableCombinations = combinations.availableToScoreCategories();
 
@@ -1241,13 +1143,13 @@ public class PlayRoundActivity extends AppCompatActivity {
             Button scoreButton = findViewById(resID);
             if (scoreButton != null) {
                 scoreButton.setVisibility(View.VISIBLE); // Make specified buttons visible
-                scoreButton.setText("Available");       // Set text to "Available"
-                scoreButton.setClickable(false);        // Make the button unclickable
+                scoreButton.setText(R.string.available);       // Set text to "Available"
+                scoreButton.setClickable(false);        // Make the button not clickable
             }
         }
         highlightBoard();
 
-        int categoryReceived = MainActivity.tournament.round.playTurnComputer(COMPUTER, Currentdice, 2, keptDiceInd);
+        int categoryReceived = MainActivity.tournament.getRound().playTurnComputer(COMPUTER, Currentdice, 2, keptDiceInd);
         if (categoryReceived == -1) {
             logger.log("Computer has nothing to score, turn skipped");
             new AlertDialog.Builder(this) // Replace with your activity's context
@@ -1261,9 +1163,6 @@ public class PlayRoundActivity extends AppCompatActivity {
                     .setCancelable(false) // Prevent dismissing the dialog without clicking OK
                     .show();
         } else {
-            // Show a dialog before updating the scorecard
-
-            String categoryName = "Category " + (categoryReceived + 1); // Replace with actual category name if available
 
             logger.log("Computer decided to score in "+ combinations.getCategoryName(categoryReceived));
             new AlertDialog.Builder(this)
@@ -1280,14 +1179,21 @@ public class PlayRoundActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method updates the player scores displayed on the screen.
+     */
     public void updatePlayScores() {
         TextView humanScoreTotal = findViewById(R.id.humanScoreTotal);
         TextView computerScoreTotal = findViewById(R.id.computerScoreTotal);
-        humanScoreTotal.setText(String.valueOf(combinations.getTotal(HUMAN)));
-        computerScoreTotal.setText(String.valueOf(combinations.getTotal(COMPUTER)));
+        humanScoreTotal.setText(valueOf(combinations.getTotal(HUMAN)));
+        computerScoreTotal.setText(valueOf(combinations.getTotal(COMPUTER)));
     }
 
-    public boolean loadFileAndRead(String fileName) {
+    /**
+     * This method loads a file from the internal Downloads directory and reads its contents.
+     * @param fileName (String) The name of the file to load and read.
+     */
+    public void loadFileAndRead(String fileName) {
         try {
             // Locate the file in the internal Downloads directory
             File downloadsDir = new File(getFilesDir(), "Downloads");
@@ -1295,30 +1201,32 @@ public class PlayRoundActivity extends AppCompatActivity {
 
             // Check if the file exists
             if (!fileToLoad.exists()) {
-                //Log.e("LoadFile", "File not found in Downloads directory: " + fileToLoad.getAbsolutePath());
-                return false;
+                logger.log("File not found in Downloads directory: ");
+                return;
             }
 
             // Open the file and create a BufferedReader
             BufferedReader fileReader = new BufferedReader(new FileReader(fileToLoad));
 
             // Call the readFile method in your model and pass the BufferedReader
-            return MainActivity.tournament.loadTournament(fileReader);
+            MainActivity.tournament.loadTournament(fileReader);
+
 
         } catch (IOException e) {
-            e.printStackTrace();
-            //Log.e("LoadFile", "Failed to load file: " + fileName, e);
-            return false;
+            logger.log("Failed to load file: " + fileName);
+            return ;
         }
     }
 
-
+    /** loadedScorecard
+     * This method updates the player scores displayed on the screen.
+     */
     public void loadedScorecard() {
         int maxCategoryNo = 11;
 
         Combinations scorecard = new Combinations();
         for (int i = 0; i <= maxCategoryNo; i++) {
-            int score = scorecard.getSetCategoryScore(i);; // Get the score for the category
+            int score = scorecard.getSetCategoryScore(i); // Get the score for the category
 
             // Get the TextView IDs dynamically using resource names
             String textId = "score" + (i + 1);
@@ -1336,7 +1244,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             // Update UI elements only if all necessary views are found
             if (score != 0) {
                 // Update the score TextView
-                textScore.setText(String.valueOf(score));
+                textScore.setText(valueOf(score));
 
                 // Update the player who scored
                 int currentPlayerId = scorecard.getSetPlayerId(i);
@@ -1345,19 +1253,19 @@ public class PlayRoundActivity extends AppCompatActivity {
 
                 // Update the round number
                 int roundNo = scorecard.getSetRoundNo(i);
-                roundNoText.setText(String.valueOf(roundNo));
-            } else {
-                // Log a warning if any of the views are missing
-                //Log.w("loadedScorecard", "Missing TextView for category: " + (i + 1));
+                roundNoText.setText(valueOf(roundNo));
             }
 
             TextView humanScoreTotal = findViewById(R.id.humanScoreTotal);
             TextView computerScoreTotal = findViewById(R.id.computerScoreTotal);
-            humanScoreTotal.setText(String.valueOf(scorecard.getTotal(HUMAN)));
-            computerScoreTotal.setText(String.valueOf(scorecard.getTotal(COMPUTER)));
+            humanScoreTotal.setText(valueOf(scorecard.getTotal(HUMAN)));
+            computerScoreTotal.setText(valueOf(scorecard.getTotal(COMPUTER)));
         }
     }
 
+    /**
+     * This method saves the current game state to a file in the internal Downloads directory.
+     */
     public  void saveGameHandler(String fileName){
         try {
             MainActivity.tournament.saveGame(createFile(fileName));
@@ -1370,6 +1278,9 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method creates a new file in the internal Downloads directory and returns a BufferedWriter for writing to the file.
+     */
     private BufferedWriter createFile(String fileName) throws IOException {
         // Get the directory for saved files
         File savedFilesDir = new File(getFilesDir(), "Downloads");
@@ -1384,6 +1295,11 @@ public class PlayRoundActivity extends AppCompatActivity {
         return new BufferedWriter(new FileWriter(file));
     }
 
+
+    /**
+     * This method displays a dialog for the user to enter dice values manually.
+     */
+    @SuppressLint("DefaultLocale")
     private void manualInputDialog(ArrayList<Integer> keptDicesInd, ManualDiceCallback callback) {
         ArrayList<Integer> newDice = new ArrayList<>(5);
 
@@ -1413,14 +1329,15 @@ public class PlayRoundActivity extends AppCompatActivity {
                 manualIndices.add(i); // Dice to be manually set
 
                 TextView label = new TextView(this);
-                label.setText("\n  Dice " + (i + 1) + ":");
+                label.setText(String.format("\n  Dice %d:", i + 1));
+
 
                 RadioGroup group = new RadioGroup(this);
                 group.setOrientation(RadioGroup.HORIZONTAL);
 
                 for (int j = 1; j <= 6; j++) {
                     RadioButton button = new RadioButton(this);
-                    button.setText(String.valueOf(j));
+                    button.setText(valueOf(j));
                     button.setId(j); // Use dice value as ID
                     group.addView(button);
                 }
@@ -1456,9 +1373,14 @@ public class PlayRoundActivity extends AppCompatActivity {
         builder.show();
     }
 
+
+    /**
+     * This method displays the potential categories that the computer can score in after rolling the dice.
+     * @param rollCount (int) The number of rolls that have been made.
+     */
     public void displayPotentialComputer(int rollCount){
 
-        ArrayList<Integer> potentialCategories = new ArrayList<Integer>(MainActivity.tournament.round.computer.potentialCategories(Currentdice,rollCount));
+        ArrayList<Integer> potentialCategories = new ArrayList<>(MainActivity.tournament.getRound().getComputer().potentialCategories(Currentdice,rollCount));
 
 
         // Loop through each available combination and apply the border to corresponding TextViews
@@ -1475,6 +1397,11 @@ public class PlayRoundActivity extends AppCompatActivity {
         }
     }
 
+
+    /** computerRoll
+     * This method handles the computer's roll view logic.
+     * It calls the computerPlay, computerSecondRoll, and computerThirdRoll methods based on the number of rolls made.
+     */
     public void computerRoll(){
         compRollCount++;
         updateRollsLeftText(compRollCount);
