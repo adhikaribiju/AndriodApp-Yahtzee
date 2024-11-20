@@ -35,7 +35,7 @@ public class Logger {
      */
     public void log(String message) {
         String formattedMessage = getCurrentTimestamp() + ": " + message;
-        logBuffer.append(formattedMessage).append("\n");
+        logBuffer.append(formattedMessage).append("\n\n");
     }
 
     public String getLog() {

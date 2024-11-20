@@ -155,6 +155,8 @@ public class PlayRoundActivity extends AppCompatActivity {
             String selectedFile = getIntent().getStringExtra("selectedFile");
             logger.log("Game loaded from file: " + selectedFile);
 
+            helpButton.setVisibility(View.INVISIBLE);
+
             loadFileAndRead(selectedFile);
 
             updateUIPlayerRoundNo();
@@ -332,18 +334,23 @@ public class PlayRoundActivity extends AppCompatActivity {
                         }
                     }
                     messageBuilder.append("You may keep these dices: ").append(values.toString().trim());
+
+                    if (selectedDiceInds.isEmpty()) {
+                        messageBuilder.setLength(0); // Clears the existing content
+                        messageBuilder.append("You may reroll all dices:");
+                    }
+                    else {
+                        // Append the reasoning message
+                        messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
+                    }
                 } else {
                     messageBuilder.append("You may score at Category: ").append(combinations.getCategoryName(categoryReceived));
-                }
-
-                if (selectedDiceInds.isEmpty()) {
-                    messageBuilder.setLength(0); // Clears the existing content
-                    messageBuilder.append("You may reroll all dices:");
-                }
-                else {
-                    // Append the reasoning message
                     messageBuilder.append("\n\n").append(MainActivity.tournament.round.human.getReasoning());
                 }
+
+
+
+                logger.log("Computer suggested: "+ messageBuilder.toString());
 
                 // Set the message in the dialog
                 builder.setMessage(messageBuilder.toString());
@@ -372,12 +379,6 @@ public class PlayRoundActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-
-
-
-
-
-
 
 
     }
@@ -787,13 +788,14 @@ public class PlayRoundActivity extends AppCompatActivity {
                         // Set the textScore to display the score
                         textScore.setText(String.valueOf(score));
 
-                        playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
+                        //playerScoredText.setText(String.valueOf(Tournament.currentPlayerId));
+                        playerScoredText.setText(String.valueOf(HUMAN));
 
                         roundNoText.setText(String.valueOf(MainActivity.tournament.round.getRoundNo()));
 
-                        // update the scorecard.....how are you gonna do this? idk
+                        // update the scorecard.....
 
-                        MainActivity.tournament.round.playTurn(Tournament.currentPlayerId, dice, categoryNumber + 1);
+                        MainActivity.tournament.round.playTurn(HUMAN, dice, categoryNumber + 1);
 
                         logger.log("Human scored "+ String.valueOf(score) + " on "+ combinations.getCategoryName(categoryNumber));
 
@@ -903,6 +905,7 @@ public class PlayRoundActivity extends AppCompatActivity {
             } else {
                 winnerMessage = "It's a Tie!\n\nYour Score: " + humanScore + "\nComputer Score: " + computerScore;
             }
+            logger.log(winnerMessage);
 
             // Show a dialog with the winner information
             new AlertDialog.Builder(this)

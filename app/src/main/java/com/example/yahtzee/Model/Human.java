@@ -619,7 +619,7 @@ public class Human extends Player {
                             }
 
 
-                            if (board.hasThreeOfAKind()) {
+                            if (board.hasThreeOfAKind() && !board.hasFourOfAKind()) {
 
                                 for (int i = 0; i < dice.size(); i++) {
                                     if (targetValueThreeOfAKind == dice.get(i)) {
@@ -658,7 +658,7 @@ public class Human extends Player {
                 if (!board.isCategoryFill(8)) {
                     if (board.hasFullHouse()) {
                         // score it
-                        reasoningMsg = "Full House Straight is available to score! You may score it! ";
+                        reasoningMsg = "Full House is available to score! You may score it! ";
                         return 8;
                     } else {
 
@@ -676,7 +676,7 @@ public class Human extends Player {
                         }
 
 
-                        if (board.hasThreeOfAKind()) {
+                        if (board.hasThreeOfAKind() && !board.hasFourOfAKind()) {
 
                             for (int i = 0; i < dice.size(); i++) {
                                 if (targetValueThreeOfAKind == dice.get(i)) {
@@ -691,7 +691,7 @@ public class Human extends Player {
 
                             //check full house// if available scored...
                             if (!board.isCategoryFill(8) && board.hasFullHouse()) {
-                                reasoningMsg = "Full House Straight is available to score! You may score it! ";
+                                reasoningMsg = "Full House is available to score! You may score it! ";
                                 return 8;
                             }
 

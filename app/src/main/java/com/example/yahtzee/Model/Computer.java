@@ -771,7 +771,7 @@ public class Computer extends Player {
                             }
 
 
-                            if (board.hasThreeOfAKind()) {
+                            if (board.hasThreeOfAKind() && !board.hasFourOfAKind()) {
 
                                 for (int i = 0; i < dice.size(); i++) {
                                     if (targetValueThreeOfAKind == dice.get(i)) {
@@ -834,7 +834,7 @@ public class Computer extends Player {
                         }
 
 
-                        if (board.hasThreeOfAKind()) {
+                        if (board.hasThreeOfAKind() && !board.hasFourOfAKind()) {
 
                             for (int i = 0; i < dice.size(); i++) {
                                 if (targetValueThreeOfAKind == dice.get(i)) {
